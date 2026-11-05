@@ -1,0 +1,16 @@
+{
+  "name": "紫罗兰",
+  "id": "violet",
+  "buddy": "default",
+  "kind": "palette-variant",
+  "canvas": [
+    268,
+    392
+  ],
+  "palette": {
+    "outfit_hue": 275.0,
+    "accent_hue": 55.0
+  },
+  "generator": "tools/make_variant_skins.py",
+  "based_on": "assets/frames"
+}

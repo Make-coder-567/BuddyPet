@@ -1,0 +1,303 @@
+%% Buddy 图鉴联动与皮肤切换 —— 类图
+%% 说明：models.py 不依赖 PyQt5；只有 service / switcher / ui_* 依赖 Qt。
+
+classDiagram
+    direction LR
+
+    %% ---------------- 枚举与数据模型（app/gallery/models.py） ----------------
+    class SourceKind {
+        <<enumeration>>
+        CLOUD
+        CACHE
+        BUILTIN
+        DEFAULT
+    }
+
+    class SkinStatus {
+        <<enumeration>>
+        READY
+        DEGRADED
+        BROKEN
+    }
+
+    class Skin {
+        +str id
+        +str name
+        +str buddy_id
+        +str|None asset_dir
+        +dict manifest
+        +str remote_ref
+        +bool is_default
+        +bool packaged
+    }
+
+    class Buddy {
+        +str id
+        +str name
+        +bool owned
+        +str thumbnail
+        +tuple~Skin~ skins
+        +int order
+        +default_skin() Skin
+    }
+
+    class GallerySnapshot {
+        +SourceKind source
+        +str reason
+        +float fetched_at
+        +list~Buddy~ buddies
+        +str detail
+        +buddy(buddy_id) Buddy
+        +skin(buddy_id, skin_id) Skin
+    }
+
+    class ValidationResult {
+        +SkinStatus status
+        +list~str~ missing
+        +list~str~ degraded
+        +tuple~int,int~ canvas
+        +int frames
+        +bool has_gaze
+        +bool has_grip
+        +str message
+    }
+
+    Buddy "1" o-- "*" Skin : skins
+    GallerySnapshot "1" o-- "*" Buddy : buddies
+    GallerySnapshot --> SourceKind : source
+    ValidationResult --> SkinStatus : status
+
+    %% ---------------- 素材层（存量，只做最小改造） ----------------
+    class BuddySprites {
+        +Path frames_dir
+        +int canvas_w
+        +int canvas_h
+        +list~QPixmap~ raw
+        +QPixmap base_raw
+        +list~QPixmap~ eye_raw
+        +dict eye_meta
+        +QPixmap grip_raw
+        -dict _cache
+        -dict _base_cache
+        -dict _eye_cache
+        -dict _grip_cache
+        -dict _mask_cache
+        +__init__(root, frames_dir=None)
+        +width_for(height) int
+        +pixmap(frame, height, dpr) QPixmap
+        +base(height, dpr) QPixmap
+        +eye(index, height, dpr) QPixmap
+        +eye_rect(index, height) tuple
+        +grip(height, mirrored, dpr) QPixmap
+        +grip_width(height) int
+        +mask(height) QRegion
+        +foot_shadow_rect(height) QRect
+        +has_gaze() bool
+        +has_grip() bool
+        +_eye_meta_ok() bool
+        +clear_caches() None
+    }
+
+    class Settings {
+        +str selected_buddy_id
+        +str selected_skin_id
+        +str gallery_base_url
+        +str gallery_auth_ref
+        +int gallery_cache_ttl_h
+        +str gallery_last_sync
+        +bool gallery_auto_sync
+        +clamp() Settings
+        +to_dict() dict
+    }
+
+    %% ---------------- 数据层 ----------------
+    class builtin {
+        <<module>>
+        +Buddy DEFAULT_BUDDY
+        +Skin DEFAULT_SKIN
+        +snapshot(root) GallerySnapshot
+        +scan_packaged_skins(root) list~Skin~
+    }
+
+    class GalleryCache {
+        +int version
+        +float fetched_at
+        +str scope
+        +list~Buddy~ buddies
+        +cache_path() Path
+        +scope_of(base_url, auth_ref) str
+        +read() GalleryCache|None
+        +write(snapshot) None
+        +is_fresh(ttl_h) bool
+        -_quarantine() None
+    }
+
+    class Adapter {
+        <<module>>
+        +adapt_buddies(payload, detail_out) list~Buddy~
+        +adapt_skin(raw, buddy_id) Skin|None
+        -_pick(raw, candidates) Any
+    }
+
+    class CloudClient {
+        +str base_url
+        +str token
+        +int CONNECT_TIMEOUT_MS = 3000
+        +int READ_TIMEOUT_MS = 5000
+        +resolve_token(cfg) str|None
+        +fetch(cfg, on_ok, on_err) None
+        -_on_progress(recv, total) None
+        -_on_finished() None
+        -_on_connect_timeout() None
+    }
+
+    class SkinValidator {
+        <<module>>
+        +validate_skin(skin, use_cache) ValidationResult
+        -_scan_dir(dir) dict
+        -_check_canvas(sizes) tuple
+    }
+
+    class GalleryProvider {
+        +Settings cfg
+        +Path root
+        +offline_snapshot(reason, force_refresh) GallerySnapshot
+        +from_cloud(payload) GallerySnapshot
+        -_finalize(buddies, source, reason, fetched_at, detail) GallerySnapshot
+    }
+
+    %% ---------------- 服务与事务 ----------------
+    class GalleryService {
+        +GallerySnapshot _snap
+        +Settings cfg
+        +GalleryProvider provider
+        +GalleryCache cache
+        +signal snapshot_ready
+        +signal sync_state
+        +snapshot() GallerySnapshot
+        +startup_sync() None
+        +refresh(force) None
+        +current() tuple
+        +find(buddy_id, skin_id) tuple
+        +dump(path) None
+    }
+
+    class SkinSwitcher {
+        +Settings cfg
+        +Path root
+        +PetWindow pet
+        -bool _busy
+        +signal applied
+        +signal failed
+        +signal busy_changed
+        +is_busy() bool
+        +apply(buddy, skin) bool
+        +apply_default() bool
+        -_rollback(prev, reason) None
+    }
+
+    %% ---------------- UI ----------------
+    class GallerySection {
+        +GalleryService service
+        +SkinSwitcher switcher
+        +GallerySnapshot _snap
+        +Buddy _sel_buddy
+        +Skin _sel_skin
+        +_render(snap) None
+        +_on_snapshot(snap) None
+        +_on_apply() None
+        +_on_cancel() None
+        +_on_reset() None
+        +_on_refresh() None
+        +scroll_into_view() None
+    }
+
+    class BuddyTile {
+        +Buddy buddy
+        +bool selected
+        +signal clicked
+        +set_buddy(buddy, selected) None
+    }
+
+    class SkinRow {
+        +Skin skin
+        +ValidationResult vr
+        +bool selected
+        +signal clicked
+        +set_skin(skin, vr, selected) None
+    }
+
+    class SkinPreview {
+        +BuddySprites _sprites
+        +int _frame
+        +set_source(sprites) None
+        +blink() None
+        -_next_frame() None
+        -_stop_all() None
+    }
+
+    class SettingsDialog {
+        +QScrollArea scroll
+        +QVBoxLayout col
+        +GallerySection gallery_section
+        +str _focus_section
+        +showEvent(event) None
+        +_reset() None
+        +reject() None
+    }
+
+    class PetWindow {
+        +BuddySprites sprites
+        +signal sprites_changed
+        +signal gallery_requested
+        +set_sprites(sprites) None
+        +_build_mask(airborne) QRegion
+        +_edge_mask(side) QRegion
+        +_apply_geometry(initial) None
+        +_snap_edge_position(silent) bool
+        +_paint_pet(...) None
+        +_update_gaze(dt) None
+    }
+
+    class PetApp {
+        +GalleryService gallery
+        +SkinSwitcher switcher
+        +open_settings(section) None
+        +refresh_icon() None
+        +handle_command(conn) None
+    }
+
+    %% ---------------- 关系 ----------------
+    GalleryProvider --> GalleryCache : 读 L2
+    GalleryProvider --> builtin : L3/L4
+    GalleryProvider --> Adapter : 归一
+    GalleryProvider ..> GallerySnapshot : 产出
+    CloudClient ..> Adapter : 原始 payload
+    %% provider 不调用 validator；校验只在 UI 选中皮肤与 SkinSwitcher 应用前发生
+
+    GalleryService --> GalleryProvider
+    GalleryService --> GalleryCache
+    GalleryService --> CloudClient : fetch
+    GalleryService ..> GallerySnapshot : snapshot_ready
+
+    SkinSwitcher --> SkinValidator : 应用前校验
+    SkinSwitcher --> BuddySprites : 新建实例
+    SkinSwitcher --> Settings : 成功后写盘
+    SkinSwitcher --> PetWindow : set_sprites
+    SkinSwitcher ..> builtin : apply_default
+
+    GallerySection --> GalleryService
+    GallerySection --> SkinSwitcher
+    GallerySection *-- BuddyTile
+    GallerySection *-- SkinRow
+    GallerySection *-- SkinPreview
+    SkinPreview --> BuddySprites : 预览专用实例
+
+    SettingsDialog *-- GallerySection
+    PetApp --> GalleryService
+    PetApp --> SkinSwitcher
+    PetApp --> PetWindow
+    PetApp --> SettingsDialog
+
+    PetWindow --> BuddySprites : 当前生效
+    PetWindow --> Settings

@@ -1,0 +1,16 @@
+{
+  "name": "霜蓝",
+  "id": "frost",
+  "buddy": "default",
+  "kind": "palette-variant",
+  "canvas": [
+    268,
+    392
+  ],
+  "palette": {
+    "outfit_hue": 205.0,
+    "accent_hue": 45.0
+  },
+  "generator": "tools/make_variant_skins.py",
+  "based_on": "assets/frames"
+}

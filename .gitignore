@@ -1,0 +1,26 @@
+# ===== Build artifacts =====
+dist/
+build/
+*.exe
+BuddyPet_分享包/
+
+# ===== Python =====
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# ===== PyInstaller (keep *.spec as source; only ignore caches) =====
+*.spec.bak
+
+# ===== OS / editor leftovers =====
+nul
+Thumbs.db
+.DS_Store
+ehthumbs.db
+
+# ===== WorkBuddy internal (private, do not publish) =====
+.workbuddy/
+
+# ===== AI generation leftover (not required to run) =====
+assets/gen/

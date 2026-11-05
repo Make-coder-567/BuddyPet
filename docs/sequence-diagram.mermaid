@@ -1,0 +1,142 @@
+%% Buddy 图鉴联动与皮肤切换 —— 关键调用流
+%% 拆成 4 段：① 启动（不阻塞）② 打开面板（0 网络）③ 手动刷新 ④ 应用换肤 + 回滚
+
+sequenceDiagram
+    autonumber
+    participant App as PetApp(main.py)
+    participant Cfg as config.Settings
+    participant Svc as GalleryService
+    participant Prov as GalleryProvider
+    participant Cache as GalleryCache
+    participant Cloud as CloudClient(QNAM)
+    participant Bui as builtin
+    participant Dlg as SettingsDialog
+    participant Sec as GallerySection
+    participant SW as SkinSwitcher
+    participant Val as validator
+    participant Pet as PetWindow
+    participant Spr as BuddySprites
+    participant Eng as EffectEngine
+
+    %% ============ ① 启动：0 等待 ============
+    Note over App,Cfg: ① 启动阶段（任何网络状况都在 3s 内可用）
+    App->>Cfg: load()
+    App->>Spr: BuddySprites(ROOT)            %% 默认 assets/frames，行为与存量一致
+    App->>Pet: PetWindow(cfg, sprites, ...); show()
+    Note right of Pet: 宠物立即可见（<3s 目标在此达成）
+    App->>Svc: GalleryService(cfg, ROOT)     %% 不联网、不读盘
+    App->>Svc: QTimer.singleShot(0, startup_sync)
+    Svc->>Cfg: gallery_auto_sync?
+    alt auto_sync == False
+        Svc->>Prov: offline_snapshot()
+    else auto_sync == True
+        Svc->>Prov: offline_snapshot()
+        Prov->>Cache: read()
+        alt 缓存命中且 TTL 内
+            Cache-->>Prov: GalleryCache(fresh)
+            Prov-->>Svc: Snapshot(CACHE, "cache_hit")
+            Svc-->>App: snapshot_ready(snap)      %% UI 有货，不联网
+        else 无缓存 / 过期 / 损坏 / scope 不符
+            Prov->>Bui: snapshot(root)
+            Bui-->>Prov: [DEFAULT_BUDDY(+packaged skins)]
+            Prov-->>Svc: Snapshot(BUILTIN, reason)
+            Svc-->>App: snapshot_ready(snap)
+            Svc->>Cloud: fetch(cfg, on_ok, on_err)   %% 异步，不阻塞
+        end
+    end
+    Cloud->>Cloud: resolve_token(cfg)
+    alt 未配置 base_url / token
+        Cloud-->>Svc: on_err("not_configured")
+    else 已配置
+        Cloud->>Cloud: get(url) + 3s 连接超时 + 5s 读取超时
+        alt 成功 200
+            Cloud->>Prov: from_cloud(payload)
+            Prov->>Prov: Adapter.adapt_buddies() + _finalize()
+            Prov->>Cache: write(snapshot)
+            Prov-->>Svc: Snapshot(CLOUD, "ok")
+            Svc-->>App: snapshot_ready(snap)
+        else 超时 / 4xx / 5xx / parse_error / empty
+            Cloud-->>Svc: on_err(reason)
+            Svc->>Prov: offline_snapshot(reason, force_refresh=True)
+            Prov-->>Svc: Snapshot(CACHE|BUILTIN, reason)
+            Svc-->>App: snapshot_ready(snap)
+        end
+    end
+
+    %% ============ ② 打开面板：0 网络 ============
+    Note over Dlg,Sec: ② 打开「Buddy 图鉴」（读内存快照，绝不触发网络）
+    App->>Dlg: SettingsDialog(cfg, ROOT, pet_pixmap, gallery=svc, focus_section="gallery")
+    Dlg->>Sec: GallerySection(service, switcher)
+    Sec->>Svc: snapshot()                    %% 首次调用内部走 offline_snapshot()，<10ms
+    Svc-->>Sec: Snapshot
+    Sec->>Sec: _render(snap)                 %% 状态条 + 网格 + 皮肤列表 + 预览
+    Sec->>Val: validate_skin(当前皮肤)
+    Val-->>Sec: ValidationResult(READY/DEGRADED/BROKEN)
+    opt focus_section == "gallery"
+        Dlg->>Sec: scroll_into_view()
+    end
+    Note over Sec: 用户点选形象 → 皮肤列表刷新（只切 default 皮肤）<br/>点选皮肤 → validate_skin → 预览 + 缺失项 / 置灰
+
+    %% ============ ③ 手动刷新 ============
+    Note over Sec,Cloud: ③ 点「刷新图鉴」（强制忽略 TTL）
+    Sec->>Svc: refresh(force=True)
+    Svc-->>Sec: sync_state("loading")
+    Svc->>Cloud: fetch(cfg, on_ok, on_err)
+    alt 成功
+        Cloud->>Prov: from_cloud(payload)
+        Prov->>Cache: write()
+        Prov-->>Svc: Snapshot(CLOUD, "ok")
+        Svc-->>Sec: snapshot_ready ⇢ _on_snapshot → _render
+        Svc-->>Sec: sync_state("idle")
+    else 失败
+        Svc->>Prov: offline_snapshot(reason, force_refresh=True)
+        Prov-->>Svc: Snapshot(CACHE|BUILTIN, reason)
+        Svc-->>Sec: snapshot_ready → 状态条显示降级说明
+        Svc-->>Sec: sync_state("failed")     %% 不弹模态框
+    end
+
+    %% ============ ④ 应用换肤 + 回滚 ============
+    Note over Sec,Eng: ④ 点「应用」（同步事务，<1s，主线程）
+    Sec->>SW: apply(buddy, skin)
+    SW->>SW: if _busy: return BUSY（防重复点击）
+    SW->>SW: _busy = True; busy_changed(True)  %% UI 全部禁用
+    SW->>Val: validate_skin(skin)
+    alt status == BROKEN
+        Val-->>SW: ValidationResult(BROKEN, missing=[...])
+        SW-->>Sec: failed(skin, "素材不完整")
+        SW->>SW: _busy = False
+    else READY / DEGRADED
+        Val-->>SW: ValidationResult(ok)
+        SW->>SW: prev = (cfg.selected_*, pet.sprites, pet._edge, pet.cfg.pos)
+        SW->>Spr: BuddySprites(root, frames_dir=skin.asset_dir)
+        Note right of Spr: 6 帧缺失 → FileNotFoundError → 走回滚分支
+        Spr-->>SW: new_sprites（五级缓存全空）
+        SW->>Pet: set_sprites(new_sprites)
+        Pet->>Pet: self.sprites = new; _mask_cache = {}; _mask_idle = _mask_air = None
+        Pet->>Pet: gaze.reset()
+        Pet->>Pet: _apply_geometry(initial=False)
+        Note right of Pet: width_for() 用新 canvas 比例 → setFixedSize<br/>→ _build_mask → _apply_mask → _snap_edge_position(silent)<br/>→ _sync_overlay
+        Pet->>Spr: old.clear_caches()
+        Pet-->>SW: sprites_changed.emit()
+        SW->>Cfg: selected_buddy_id / selected_skin_id = 新值
+        SW->>Cfg: save(cfg)                  %% 写盘放在切换成功之后
+        SW->>Eng: say("已切换为「形象」·「皮肤」")  %% 受 bubble_hint 控制
+        SW-->>Sec: applied(buddy, skin)
+        SW->>SW: _busy = False; busy_changed(False)
+        App->>App: refresh_icon() ← sprites_changed  %% 托盘图标同步
+    end
+
+    %% ---- 回滚 ----
+    Note over SW,Pet: 失败回滚（异常 / FileNotFoundError）
+    SW->>Pet: set_sprites(prev.sprites)
+    SW->>Cfg: selected_* = prev; save(cfg)
+    SW->>Eng: say("切换失败，已恢复上一形象")
+    SW-->>Sec: failed(skin, reason)
+    Note right of SW: 保证不变量：config 永不指向加载不了的皮肤
+
+    %% ============ ⑤ 恢复默认 ============
+    Note over Sec,Bui: ⑤ 点「恢复默认」
+    Sec->>SW: apply_default()
+    SW->>Bui: DEFAULT_BUDDY / DEFAULT_SKIN
+    Note right of Bui: asset_dir = ROOT/assets/frames<br/>→ 与存量素材逐像素一致
+    SW->>SW: apply(DEFAULT_BUDDY, DEFAULT_SKIN)  %% 复用同一事务
