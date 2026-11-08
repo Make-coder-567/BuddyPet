@@ -1,0 +1,70 @@
+QA 独立验收 | Edward | repack2 v1.3.1 | 运行时部分
+python=C:\Users\mrhua\AppData\Local\Programs\Python\Python314\python.exe  time=2026-11-08 09:42:04
+ROOT=C:\Users\mrhua\Desktop\桌面宠物
+F.BEFORE 产物指纹 = {"BuddyPet_分享包\\BuddyPet.exe": {"size": 63228783, "mtime_ns": 1794100827127933700, "sha256": "c907fd8804d898b569e256c1ee570917df70b5dfe276a9bcb0ceef197ce50f19"}, "BuddyPet_分享包.zip": {"size": 62785594, "mtime_ns": 1794100991817426900, "sha256": "f9bb1184edc295520439f943fcd3768865ae67edf195ef04d531da0b905e7445"}, "BuddyPet_分享包\\使用说明.txt": {"size": 4443, "mtime_ns": 1794100707153737700, "sha256": "2f7f2f108408b3f8efe63cf3f767ce660644e2b8f6180ea7e1501d405433941c"}}
+D.BEFORE 用户真实配置 = {"size": 836, "mtime_ns": 1794045001003603000, "sha256": "6fe4269006a0724abb9537689662ffcdb78e4763ba44576973379dad91ed586f"}
+[INFO] TEMP_ROOT=C:\Users\mrhua\AppData\Local\Temp\buddy_repack2_qa_11460  TEMP_APPDATA=C:\Users\mrhua\AppData\Local\Temp\buddy_repack2_qa_11460\appdata
+[INFO] 本会话原有 _PYI_*/MEIPASS 变量 = {'_PYI_APPLICATION_HOME_DIR': 'C:\\Users\\mrhua\\AppData\\Local\\Temp\\_MEI00004a342', '_PYI_ARCHIVE_FILE': 'C:\\Users\\mrhua\\Desktop\\桌面宠物\\BuddyPet_分享包\\BuddyPet.exe', '_PYI_PARENT_PROCESS_LEVEL': '1'}
+[PASS] F.0_测试前无BuddyPet残留进程: buddy_pids={}
+[PASS] F.0_测试前命名管道空闲: QLocalSocket 连 WorkBuddyDesktopPet-1 可达=False
+
+---- C2. 不剥离 _PYI_* 的失败复现（信息项，不算 FAIL）----
+[INFO] C: 独立复现「不剥离 _PYI_* 会失败」：注入 ['_PYI_ARCHIVE_FILE', '_PYI_APPLICATION_HOME_DIR', '_PYI_PARENT_PROCESS_LEVEL'] 后 alive=True exit=None elapsed=0.33s 窗口=[["Error", "#32770", ["确定", "Failed to load Python DLL 'C:\\Users\\mrhua\\AppData\\Local\\Temp\\_MEI00004a342\\python313.dll'.\nLoadLibrary: 找不到指定的模块。\r\n"]], ["MSCTFIME UI", "MSCTFIME UI", []], ["Default IME", "IME", []]] stdout/stderr=''；判定启动失败=True。此为【测试环境污染】，真实用户双击不会带这些变量，非产品缺陷
+[PASS] C.2_C2清场后无残留实例与server: BuddyPet进程={}, server可达=False
+
+---- C1. 剥离 _PYI_* 后真实启动 ----
+[PASS] C.1_子进程环境已剥离PYI变量: 会话原有=['_PYI_APPLICATION_HOME_DIR', '_PYI_ARCHIVE_FILE', '_PYI_PARENT_PROCESS_LEVEL']; 子进程剩余=[]
+[PASS] C.1_进程族存活且宠物主窗口可见: Popen.pid=12824 exit=None family=[12824, 24992] 进程名={12824: 'BuddyPet.exe', 24992: 'BuddyPet.exe'} 主窗口hwnd=4196308 尺寸=215x321 IsWindowVisible=True
+[PASS] C.1_onefile父子两进程: 进程族中 BuddyPet.exe 数=2
+[PASS] C.1_无错误弹窗/Traceback/Qt插件错误: 错误窗口=[]; 全部窗口=[('Buddy 桌面宠物', 'Qt5152QWindowToolSaveBits', True, '215x321'), ('QTrayIconMessageWindow', 'Qt5152TrayIconMessageWindowClass', False, '1440x753'), ('PyInstaller Onefile Hidden Window', 'PyInstallerOnefileHiddenWindow', False, '1440x753'), ('Default IME', 'IME', False, '0x0'), ('Default IME', 'IME', False, '0x0')]
+[PASS] C.1_stdout_stderr干净: 长度=0 内容='' (console=False 通常为空)
+
+---- C3. 单实例：第二个 exe 自退 ----
+[PASS] C.3_第二实例自退且不产生第二窗口: 第二实例 exit=0 耗时=5.48s; 主窗口hwnd 前=[4196308] 后=[4196308]; 第二实例可见窗口=[]; stdout=''
+
+---- D1. music:status ----
+[PASS] C.4_music_status字段齐全: send=True(qt) 文件存在=True 全部字段=['degraded', 'enabled', 'kind', 'music_app', 'peak', 'playing', 'title'] 缺=[]
+[PASS] C.4_music_status_peak为float: peak=0.5901097059249878 type=float; playing=True kind=audio title='' music_app=False degraded=False enabled=True; 全文={"playing": true, "kind": "audio", "title": "", "peak": 0.5901097059249878, "music_app": false, "degraded": false, "enabled": true}
+[INFO] C: peak 为 float 证明冻结 exe 内 audio_probe.probe_peak() 真实执行；结合 B 段字节码常量(POLL_MS=500/START_CONFIRM_MS=600/STOP_CONFIRM_MS=1200/APP_SCAN_EVERY=4/time.monotonic)可判定新版音乐状态机已编入并运行
+
+---- D2. drop:test:<临时 png> ----
+[PASS] C.5_drop_count_0到1且路径正确: send=True(qt) drop_count 0->1, last_drop_path='C:\\Users\\mrhua\\AppData\\Local\\Temp\\buddy_repack2_qa_11460\\drop_test.png' 期望='C:\\Users\\mrhua\\AppData\\Local\\Temp\\buddy_repack2_qa_11460\\drop_test.png'
+[PASS] C.5_被拖文件mtime/sha256前后不变: before={'size': 2056, 'mtime_ns': 1794102124704746700, 'sha256': '7630fc84b891c670090a8e14448c7dc0b1c338ea47f86be5bb07363d4cd75619'} | after={'size': 2056, 'mtime_ns': 1794102124704746700, 'sha256': '7630fc84b891c670090a8e14448c7dc0b1c338ea47f86be5bb07363d4cd75619'}
+
+---- D3. hotkey:toggle 两次 ----
+[PASS] C.6_主窗口可见性True-False-True: 主窗口hwnd=4196308 IsWindowVisible: 初始=True 第一次=False 第二次=True
+
+---- D4. 运行中外部抢占 Ctrl+Alt+B ----
+[PASS] C.7_运行中外部抢占失败1409: RegisterHotKey(None, 0xB0B, 0x4003, ord('B')=0x42) → ok=False GetLastError=1409（期望 1409 ERROR_HOTKEY_ALREADY_REGISTERED）
+
+---- quit 收尾 ----
+[PASS] C.8_quit正常退出exit0且无残留: send quit=True(qt) exit=0 残留BuddyPet进程={}
+[PASS] C.8_退出日志无Traceback/DLL错误: stdout/stderr 长度=0 内容=''
+
+---- D4(续). quit 后热键已注销 ----
+[PASS] C.9_quit后全局热键可重新注册: 带MOD_NOREPEAT: ok=True err=0; 不带: ok=True err=0（均已立即注销清理）
+
+---- 附加项. 独立会话：双击开石头剪刀布 + VK_1 / VK_ESCAPE ----
+      附加会话主窗口 hwnd=4261844 尺寸=215x321
+      真实鼠标双击证据 = {'foreground': True, 'cursor_set': True, 'screen_xy': (1763, 846), 'rect': (1656, 686, 1871, 1007)}; 命中 RPS 窗口 = [(6752094, '石头 · 剪刀 · 布', 380, 472)]
+[PASS] C.10_双击可打开石头剪刀布对话框: 真实输入双击(SetForegroundWindow+SetCursorPos+mouse_event x2) 命中 1 个 RPS 窗口
+[PASS] C.10_VK_1/VK_ESCAPE后不abort且无幽灵窗口: VK_1=True VK_ESCAPE=True 进程exit=None 残留RPS窗口=[]
+      附加会话 quit send=True exit=0; 清理后 BuddyPet 进程={}
+
+---- 兜底清理 ----
+      兜底清理后 BuddyPet 进程={}
+
+========== D. 用户真实配置零污染 ==========
+[PASS] D.1_用户真实配置mtime/size/sha256完全一致: BEFORE={"size": 836, "mtime_ns": 1794045001003603000, "sha256": "6fe4269006a0724abb9537689662ffcdb78e4763ba44576973379dad91ed586f"} | AFTER={"size": 836, "mtime_ns": 1794045001003603000, "sha256": "6fe4269006a0724abb9537689662ffcdb78e4763ba44576973379dad91ed586f"}
+
+========== F. 收尾 ==========
+[PASS] F.1_无残留BuddyPet进程: buddy_pids={}
+[PASS] F.2_无WorkBuddyDesktopPet命名管道占用: QLocalSocket 连 WorkBuddyDesktopPet-1 可达=False
+[PASS] F.3_全局热键可重新注册: RegisterHotKey ok=True err=0（已注销）
+[PASS] F.4_产物指纹与测试前一致: BEFORE={"BuddyPet_分享包\\BuddyPet.exe": {"size": 63228783, "mtime_ns": 1794100827127933700, "sha256": "c907fd8804d898b569e256c1ee570917df70b5dfe276a9bcb0ceef197ce50f19"}, "BuddyPet_分享包.zip": {"size": 62785594, "mtime_ns": 1794100991817426900, "sha256": "f9bb1184edc295520439f943fcd3768865ae67edf195ef04d531da0b905e7445"}, "BuddyPet_分享包\\使用说明.txt": {"size": 4443, "mtime_ns": 1794100707153737700, "sha256": "2f7f2f108408b3f8efe63cf3f767ce660644e2b8f6180ea7e1501d405433941c"}} | AFTER={"BuddyPet_分享包\\BuddyPet.exe": {"size": 63228783, "mtime_ns": 1794100827127933700, "sha256": "c907fd8804d898b569e256c1ee570917df70b5dfe276a9bcb0ceef197ce50f19"}, "BuddyPet_分享包.zip": {"size": 62785594, "mtime_ns": 1794100991817426900, "sha256": "f9bb1184edc295520439f943fcd3768865ae67edf195ef04d531da0b905e7445"}, "BuddyPet_分享包\\使用说明.txt": {"size": 4443, "mtime_ns": 1794100707153737700, "sha256": "2f7f2f108408b3f8efe63cf3f767ce660644e2b8f6180ea7e1501d405433941c"}}
+F. 临时目录已清理: C:\Users\mrhua\AppData\Local\Temp\buddy_repack2_qa_11460 exists=False
+[PASS] F.5_临时目录已清理: C:\Users\mrhua\AppData\Local\Temp\buddy_repack2_qa_11460
+
+==============================================================================
+运行时汇总: PASS=26 FAIL=0 INFO=2
+RUNTIME_IS_PASS: YES

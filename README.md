@@ -6,6 +6,10 @@ WorkBuddy 的桌面常驻小助手。形象取自 WorkBuddy 成长中心的「�
 - **左键单击** → 唤起 / 打开 WorkBuddy 主程序
 - **右键单击** → 上下文菜单（设置 / 互动效果 / 置顶 / 锁定 / 退出）
 - **按住拖动** → 换位置；松手自动记住
+- **双击** → 来一局石头剪刀布
+- **Ctrl+Alt+B** → 全局唤出 / 隐藏（在别的程序里也生效）
+- **拖入文件** → 按类型给不同反应（图片冒心、音频跳舞、代码闪光…）
+- **检测到音乐/音频** → 自己摇两下
 - 待机呼吸、随机眨眼、定时小互动；10 个可切换的互动特效
 
 ---
@@ -38,12 +42,16 @@ pip install -r requirements.txt
 | 操作 | 效果 |
 | --- | --- |
 | 左键单击 | 打开 WorkBuddy（已运行则切到前台），并播放一个起跳动作 |
+| 左键双击 | 弹出石头剪刀布小游戏（单击延迟 260ms 再执行，不会误触发） |
 | 右键单击 | 弹出上下文菜单 |
 | 按住左键拖动 | 移动宠物，松手后记住位置 |
 | 拖到屏幕任意边缘 | 自动吸附并「抓住」该边（左右悬挂 / 上倒挂 / 下停靠） |
+| **Ctrl+Alt+B** | 全局唤出 / 隐藏宠物（任意程序前台时都生效） |
+| **拖入文件 / 文件夹 / 链接** | 悬停时橙色虚线框 + 呼吸放大；松手后按类型播放特效并说一句 |
 | 双击托盘图标 | 从隐藏状态叫回宠物 |
 | 鼠标悬停 | 轻微放大 + 首次提示气泡 |
 | 鼠标靠近（460px 内） | 眼睛转向光标，头部跟着微偏；**中心与四边（左/右/上/下贴边）都生效**；超出范围回正 |
+| 系统开始放音乐 / 有声音 | 原地小幅度摇摆（音乐）或眨一下眼（其它音频），停了就停 |
 
 左键行为可在设置里改成「播放互动效果」或「无操作」。
 
@@ -53,7 +61,11 @@ pip install -r requirements.txt
 打开 WorkBuddy
 ────────────────
 互动效果 ▶   随机来一个 / 10 个特效 / 待机随机互动
+              音效 ✓ / 音乐感知 ✓
+石头剪刀布…
 设置…  Ctrl+,
+全局快捷键（Ctrl+Alt+B） ✓
+切换 Buddy…
 ────────────────
 始终置顶  ✓
 锁定位置
@@ -140,12 +152,98 @@ pip install -r requirements.txt
 
 ---
 
+## 全局快捷键
+
+在**任何程序**前台时按 <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>B</kbd> 都能唤出 / 隐藏宠物，比去点托盘图标快得多。
+
+| 项 | 说明 |
+| --- | --- |
+| 实现 | `RegisterHotKey(NULL, id, Ctrl|Alt|MOD_NOREPEAT, VK_B)` + `QAbstractNativeEventFilter` 捕获 `WM_HOTKEY`（`windows_generic_MSG` 与 `windows_dispatcher_MSG` 两种事件类型都接） |
+| 防连发 | `MOD_NOREPEAT`，长按不会让宠物疯狂闪烁 |
+| 隐藏时 | 托盘气泡提示「点托盘图标或按 Ctrl+Alt+B 可以叫我回来」 |
+| 唤出时 | 气泡说一句（台词池 `hotkey_show`） |
+| 注册失败 | 典型是别人已经占了这组合键（Win32 错误 1409）：只弹一条托盘提示 + 一句气泡，**其余功能完全不受影响** |
+| 关闭 | 设置 → 交互 → 全局快捷键，或右键菜单 / 托盘菜单的勾选项；立即注销 |
+| 其它平台 | 非 Windows 一律返回「注册失败」但不抛异常，功能静默降级 |
+
+---
+
+## 拖放文件
+
+把文件（或文件夹、网页链接）**拖到宠物身上**松手就行。
+
+**拖入过程中**：窗口遮罩临时铺满整窗，画一圈橙色虚线圆角框（内填 6% 橙），宠物轻微呼吸式放大并带光晕，同时响一声轻响、说一句「放下来给我看看～」。移出去就恢复原本的轮廓遮罩。
+
+**松手之后**按类型给不同反应（**只读取名字和大小，绝不复制、移动或打开文件**）：
+
+| 类型 | 扩展名 | 特效 | 台词池 |
+| --- | --- | --- | --- |
+| 图片 | png jpg jpeg gif webp bmp svg ico | 爱心暴击 | `drop_image` |
+| 音频 | mp3 wav flac m4a ogg aac wma | 摇摆舞步 | `drop_audio` |
+| 代码 | py js ts tsx jsx java c cpp h cs go rs json yaml yml html css sh bat | 星光闪烁 | `drop_code` |
+| 文档 | doc docx pdf txt md ppt pptx xls xlsx csv | 星光闪烁 | `drop_doc` |
+| 压缩包 | zip rar 7z tar gz | 盲盒开箱 | `drop_archive` |
+| 其它 / 无扩展名 | — | 盲盒开箱 | `drop_other` |
+| 文件夹 | — | 盲盒开箱 | `drop_folder` |
+| 网页链接 | — | 星光闪烁 | `drop_url` |
+| 多个文件 | — | 彩带礼花 | `drop_multi` |
+
+气泡先说具体信息（`收到「报告.pdf」 1.2 MB` / `收到 3 个文件！`），1.9 秒后再补一句分类台词。统计写进配置：`drop_count` 累加、`last_drop_path` 记录最后一个路径。
+
+---
+
+## 音乐感知
+
+宠物会「听见」你在放东西：系统一出声它就摇两下，安静下来就停。
+
+- **零依赖**：只用 `ctypes` 调 Core Audio 的 `IAudioMeterInformation::GetPeakValue` 读默认输出设备的峰值；再用 `EnumWindows` + 进程名/标题识别是不是音乐播放器（网易云、QQ音乐、酷狗、酷我、Spotify、foobar2000、Apple Music…）。
+- **判定**：起播阈值 `0.004`、停播阈值 `0.0015`（滞回），并且**连续 2 次同向**才真正切换，避免一次「叮」就让宠物跳起来。
+- **区分**：命中音乐播放器 → `music`（跳摇摆舞）；只是有声音（视频、会议）→ `audio`（轻轻眨个眼），不喧宾夺主。
+- **降级**：没有音频设备或非 Windows 时 `peak` 返回 `None`，改用「有没有音乐播放器在跑」判断，内部标记 `degraded`。
+- **不打扰**：首次采样在启动 1500ms 后，**只建档不发信号**（一开机不会自己跳舞）；之后每 8 秒轮询一次，全部调用都在 `try/except` 里。
+- **可关**：设置 → 交互 → 音乐感知，或右键/托盘菜单。关掉后立即停止轮询并把律动收回去。
+
+命令行排查：`music:on` / `music:off` 强制开关，`music:status` 把一次探测的原始结果（`playing / kind / title / peak / music_app / degraded`）写到 `%APPDATA%\WorkBuddyPet\music_status.json`。
+
+---
+
+## 石头剪刀布
+
+**双击宠物**（或右键菜单 →「石头剪刀布…」/ 托盘菜单 / 命令 `rps`）开一局。
+
+| 操作 | 效果 |
+| --- | --- |
+| 点「石头 / 剪刀 / 布」 | 按钮锁定 →「石头… 剪刀… 布！」每 220ms 一句 → 亮出双方出拳 |
+| `1` / `2` / `3` | 等价于点三个按钮（别名：石头 / 剪刀 / 布） |
+| `Enter` | 再来一局 |
+| `Esc` | 退出 |
+
+胜负：石头胜剪刀、剪刀胜布、布胜石头，相同为平。每局结束写 `rps_wins / rps_losses / rps_draws` 并落盘，卡片底部实时显示「战绩 X 胜 · Y 平 · Z 负」；同时通知主窗口放特效：赢撒彩带、输起跳、平眨眼。
+
+> 因为单击要「让位」给双击，左键单击的响应被推迟了一个双击间隔（≤260ms）。这是有意的取舍，右键菜单与拖拽完全不受影响。
+
+---
+
+## 台词池
+
+新增场景的所有中文短句集中在 `app/lines.py`：
+
+```python
+from app import lines
+lines.pick("music_start_track", title="晴天")   # → 在放《晴天》，真好听
+lines.pick("drop_image")                        # → 好漂亮的图！
+```
+
+共 21 个池（热键、拖入/拖出、9 种拖放分类、音乐、石头剪刀布），每个池 3–5 句，单句不超过 22 字、不用彩色 emoji（气泡字体不稳）。缺 key 自动回退到通用句，格式化失败返回原文 —— 永远不会因为台词抛异常。
+
+---
+
 ## 设置项
 
 | 分组 | 选项 |
 | --- | --- |
 | 外观 | 大小 120–360 px、不透明度 35–100%、活泼程度 20–180% |
-| 交互 | 左键行为、待机呼吸动画、定时随机互动（间隔 1–60 分钟）、悬停提示气泡、贴边依附、视线跟随鼠标 |
+| 交互 | 左键行为、待机呼吸动画、定时随机互动（间隔 1–60 分钟）、悬停提示气泡、贴边依附、视线跟随鼠标、**全局快捷键（Ctrl+Alt+B）**、**音乐感知** |
 | 系统 | 始终置顶、锁定位置、开机自动启动、WorkBuddy 程序路径 |
 
 改动即时预览，**保存**生效，**取消**回滚。配置落在 `%APPDATA%\WorkBuddyPet\config.json`。
@@ -159,9 +257,14 @@ pip install -r requirements.txt
 ├── main.py                 入口：单实例、托盘、命令通道
 ├── 启动桌面宠物.bat         无控制台启动
 ├── app/
-│   ├── pet_window.py       宠物主窗口：透明置顶、拖拽、点击、右键菜单
+│   ├── pet_window.py       宠物主窗口：透明置顶、拖拽、点击、拖放、右键菜单
 │   ├── overlay.py          特效叠加层：点击穿透的粒子窗口
 │   ├── effects.py          10 个互动特效 + 粒子系统 + 气泡
+│   ├── rps.py              石头剪刀布：纯逻辑 judge() + 卡片对话框
+│   ├── lines.py            台词池（热键 / 拖放 / 音乐 / 小游戏）
+│   ├── hotkeys.py          全局快捷键（RegisterHotKey + 原生事件过滤器，仅 Windows）
+│   ├── music.py            音乐感知状态机（轮询 / 滞回 / 防抖）
+│   ├── audio_probe.py      零依赖音频探测（Core Audio 峰值 + 音乐应用识别，仅 Windows）
 │   ├── settings_dialog.py  设置面板 / 关于窗口
 │   ├── assets.py           素材加载、缩放缓存、命中区域、抓边眼睛分层
 │   ├── gallery/            图鉴与换肤：models / provider / validator / builtin / cache / adapter / cloud / service / switcher / ui_*
@@ -183,6 +286,7 @@ pip install -r requirements.txt
     ├── verify_variant_skins.py  校验变体皮肤
     ├── verify_gaze_edges.py 验证五种姿态下的视线跟随
     ├── preview.py          离屏渲染效果图（不打扰桌面）
+    ├── smoke_features.py   离屏冒烟测试（热键 / 拖放 / 音乐 / 小游戏 / 台词）
     ├── shoot.py            触发特效并连续截屏
     └── winshot.py          按窗口标题截图
 ```
@@ -205,11 +309,30 @@ pip install -r requirements.txt
 
 **动画**：60 FPS 定时器驱动，特效各自维护姿态曲线（缩放 / 位移 / 旋转 / 透明度 / 眼睛帧），逐帧叠加到待机呼吸与悬停放大之上，互不打架。
 
-**单实例**：`QLocalServer` 占名，重复启动时向已有实例发命令并退出；同一个通道也用于自动化测试（`effect:box` / `settings` / `quit`）。
+**拖入时换成整窗遮罩**：平时窗口用 `setMask` 裁成宠物轮廓，虚线提示框画在轮廓外就会被裁掉。所以进入拖入态时把遮罩临时换成整个窗口矩形（`QRegion(self.rect())`），`paintEvent` 先画虚线框、再画宠物；松手或移出时用 `_apply_mask()` 恢复（贴边时恢复的是贴边轮廓）。`_tick` 里切换遮罩的判断加了 `if not self._drag_over` 守卫，否则待机呼吸会把遮罩每帧改回轮廓。
+
+**音乐律动不改特效**：不新增特效，只在 `_tick` 末尾叠加一层「权重缓动」的微小摆动 —— `_music_groove` 以 `k = min(1, dt×2.5)` 缓动到 0/1，再乘活泼程度给出 ±1.8° 旋转与 ±1.0px 位移。关掉音乐时权重自然衰减到 0，姿态不会突然定格；拖动中不律动（免得两个位移打架）。
+
+**双击与单击**：`mouseReleaseEvent` 不再直接执行单击，而是启动一个 `min(260, doubleClickInterval())` 的单次定时器；`mouseDoubleClickEvent` 先 `stop()` 它并发 `rps_requested`，同时置 `_ignore_click` 让双击的第二下松手不再排一次单击。
+
+**单实例**：`QLocalServer` 占名，重复启动时向已有实例发命令并退出；同一个通道也用于自动化测试（`effect:box` / `settings` / `rps` / `music:on|off|status` / `hotkey:toggle` / `drop:test:<path>` / `quit`）。
+
+**小游戏的键盘**：两条路都要走通。① `keyPressEvent` 处理正常的键盘输入 —— 这里**只能**判 `Qt.Key_1/2/3`：Qt5 没有 `Qt.Key_NumPad1/2/3` 这几个枚举（且小键盘数字与主键盘数字共用同一个键码），写错会在 Qt 虚函数里抛 `AttributeError`，PyQt 随即 `qFatal()` 让**整个进程 abort**（0xC0000409），点个 Esc 桌宠就没了；② 另装一个应用级原生事件过滤器接管 `WM_KEYDOWN`：Windows 下若窗口不是焦点窗口（自动化直接 `PostMessageW` 就是这种情况），Qt 会丢掉键事件，只有原生过滤器能看到。两条路共用 `handle_action()`，命中后原生过滤器返回 `True` 吃掉消息，不会双触发。卡片还是一次性的——`main.open_rps` 里 `exec_()` 返回后 `deleteLater()`，不留隐藏窗口。
+
+**离屏自检**：`QT_QPA_PLATFORM=offscreen python tools/smoke_features.py` —— 构造全套对象、跑一遍真实 `QDragEnterEvent`/`QDropEvent`、验证 `judge()` 9 种组合、`probe_peak()` 不抛、`MusicDetector.force()` 发信号、空跑数十帧 `_tick()`，最后打印 `ALL PASS`。测试会把 `APPDATA` 指到临时目录，不会碰真实配置。
 
 ---
 
 ## 常见问题
+
+**按 Ctrl+Alt+B 没反应？**
+先看托盘有没有「全局快捷键没抢到」的提示 —— 说明这组合键已被别的程序（常见于截图/录屏/输入法工具）占用。这不是本程序的问题，可以在那些软件里换键，或设置 → 交互里把「全局快捷键」关掉，用托盘图标唤出。
+
+**拖文件到宠物身上没反应？**
+必须拖到**宠物身体**上（窗口透明区不吃拖放事件）。也可以跳过鼠标直接验证：`python -c "…"` 或单实例通道发 `drop:test:D:\a.png`，看是否冒出「收到「a.png」…」的气泡。
+
+**放着音乐它却不摇？**
+1) 设置 → 交互 → 音乐感知是否开着；2) 系统音量是否静音（静音时峰值恒为 0）；3) 音量太小（低于 0.004）识别不到；4) 蓝牙耳机切换设备后，下一次 8 秒轮询会重新取默认设备。`music:status` 可以看当前峰值。
 
 **点了左键没反应？**
 先确认 WorkBuddy 的安装位置。设置 → 程序路径 → 浏览，选中 `WorkBuddy.exe`。默认会自动在注册表与常见目录（如 `D:\WorkBuddy`）里查找。

@@ -1,0 +1,32 @@
+EXE = C:\Users\mrhua\Desktop\桌面宠物\BuddyPet_分享包\BuddyPet.exe (63225313 B)
+REAL_CONFIG_BEFORE = {"path": "C:\\Users\\mrhua\\AppData\\Roaming\\WorkBuddyPet\\config.json", "exists": true, "size": 647, "mtime_ns": 1794034949476671900, "sha256": "0658df67b2c1bb959e6447aacf0ada3a1dcd5c2c6a459b752ef1b507dc47cd0b"}
+TEMP_APPDATA = C:\Users\mrhua\AppData\Local\Temp\buddy_pack_7456\appdata
+DROP_PNG     = C:\Users\mrhua\AppData\Local\Temp\buddy_pack_7456\drop_test.png
+STRIPPED_PYI_ENV = ['_PYI_APPLICATION_HOME_DIR', '_PYI_ARCHIVE_FILE', '_PYI_PARENT_PROCESS_LEVEL']
+LAUNCHED pid=22652
+PROCESS_FAMILY = [1736, 22652]
+PASS 启动存活且宠物窗口出现 pid=22652 windows=[(5245612, 'Qt5152QWindowToolSaveBits', 'Buddy 桌面宠物', True), (2558220, 'Qt5152TrayIconMessageWindowClass', 'QTrayIconMessageWindow', False), (5966116, 'PyInstallerOnefileHiddenWindow', 'PyInstaller Onefile Hidden Window', False), (10224644, 'IME', 'Default IME', False), (4720934, 'IME', 'Default IME', False)]
+PRIMARY_PET_HWND = 5245612
+PASS app/hotkeys.py 顶层 import 成功且启动无异常（TOC 已含该模块）
+PASS 命令通道 music:status 已送达
+PASS music_status.json 已写出，keys=['degraded', 'enabled', 'kind', 'music_app', 'peak', 'playing', 'title'] payload={'playing': False, 'kind': 'audio', 'title': '', 'peak': 9.962025648846407e-10, 'music_app': False, 'degraded': False, 'enabled': True}
+PASS 命令通道 drop:test 已送达（drop_count 前=0）
+PASS drop_count 0 -> 1（+1），last_drop_path='C:\\Users\\mrhua\\AppData\\Local\\Temp\\buddy_pack_7456\\drop_test.png'
+WINDOWS@t0 = [(4852302, 'Qt5152QWindowToolSaveBits', 'Buddy 桌面宠物', True), (5245612, 'Qt5152QWindowToolSaveBits', 'Buddy 桌面宠物', True), (2558220, 'Qt5152TrayIconMessageWindowClass', 'QTrayIconMessageWindow', False), (5966116, 'PyInstallerOnefileHiddenWindow', 'PyInstaller Onefile Hidden Window', False), (10224644, 'IME', 'Default IME', False), (4720934, 'IME', 'Default IME', False)]
+PASS 命令通道 hotkey:toggle #1 已送达
+WINDOWS@t1 = [(4852302, 'Qt5152QWindowToolSaveBits', 'Buddy 桌面宠物', True), (5245612, 'Qt5152QWindowToolSaveBits', 'Buddy 桌面宠物', False), (2558220, 'Qt5152TrayIconMessageWindowClass', 'QTrayIconMessageWindow', False), (5966116, 'PyInstallerOnefileHiddenWindow', 'PyInstaller Onefile Hidden Window', False), (10224644, 'IME', 'Default IME', False), (4720934, 'IME', 'Default IME', False)]
+PASS 命令通道 hotkey:toggle #2 已送达
+WINDOWS@t2 = [(5245612, 'Qt5152QWindowToolSaveBits', 'Buddy 桌面宠物', True), (4852302, 'Qt5152QWindowToolSaveBits', 'Buddy 桌面宠物', True), (2558220, 'Qt5152TrayIconMessageWindowClass', 'QTrayIconMessageWindow', False), (5966116, 'PyInstallerOnefileHiddenWindow', 'PyInstaller Onefile Hidden Window', False), (10224644, 'IME', 'Default IME', False), (4720934, 'IME', 'Default IME', False)]
+VISIBILITY seq (primary hwnd 5245612) = True -> False -> True
+PASS hotkey:toggle 切换窗口可见性（显示→隐藏→显示）
+PASS 运行期间无 Traceback / Error / Fatal 对话框
+PASS 命令通道 quit 已送达
+PASS 进程正常退出，exit code=0
+FROZEN_STDOUT_LOG = ''
+PASS 冻结产物日志无 Traceback / 导入失败 / Qt 平台插件错误
+REAL_CONFIG_AFTER  = {"path": "C:\\Users\\mrhua\\AppData\\Roaming\\WorkBuddyPet\\config.json", "exists": true, "size": 647, "mtime_ns": 1794034949476671900, "sha256": "0658df67b2c1bb959e6447aacf0ada3a1dcd5c2c6a459b752ef1b507dc47cd0b"}
+PASS 用户真实 %APPDATA%\WorkBuddyPet\config.json 指纹完全一致（未被污染）
+PASS 退出后 Ctrl+Alt+B 可重新注册 → 无残留占用，全局热键已释放
+--- SUMMARY ---
+PASS_COUNT=15 FAIL_COUNT=0
+ALL PASS

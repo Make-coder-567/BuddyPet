@@ -15,18 +15,22 @@ from PyQt5.QtCore import Qt, QTimer  # noqa: E402
 from PyQt5.QtNetwork import QLocalServer, QLocalSocket  # noqa: E402
 from PyQt5.QtWidgets import QAction, QApplication, QMenu, QSystemTrayIcon  # noqa: E402
 
-from app import config, icons, theme  # noqa: E402
+from app import config, icons, lines, theme  # noqa: E402
 from app.assets import BuddySprites  # noqa: E402
 from app.effects import EFFECT_ORDER, EFFECTS, EffectEngine  # noqa: E402
 from app.gallery.service import GalleryService  # noqa: E402
 from app.gallery.switcher import SkinSwitcher  # noqa: E402
+from app.hotkeys import GlobalHotkeys  # noqa: E402
+from app.music import MusicDetector  # noqa: E402
 from app.overlay import EffectOverlay  # noqa: E402
 from app.pet_window import PetWindow  # noqa: E402
+from app.rps import RPSDialog  # noqa: E402
 from app.settings_dialog import AboutDialog, SettingsDialog  # noqa: E402
 
 SERVER_NAME = "WorkBuddyDesktopPet-1"
 APP_ID = "WorkBuddy.DesktopPet.1"
 DUMP_NAME = "gallery_dump.json"
+MUSIC_STATUS_NAME = "music_status.json"
 
 
 def _dialog_kwargs(section: str, gallery=None, switcher=None) -> dict:
@@ -69,6 +73,26 @@ class PetApp:
         self.pet.gallery_requested.connect(lambda: self.open_settings(section="gallery"))
         self.pet.sprites_changed.connect(self.refresh_icon)
 
+        # ---------------- 新增能力：全局快捷键 / 音乐感知 / 小游戏 ----------------
+        # 1) 全局快捷键：非 Windows 或注册失败都只是「没有这个功能」，不影响其它能力
+        #    注意：PetApp 不是 QObject，不能当 Qt 父对象；生命周期由本对象持有引用即可
+        self.hotkeys = GlobalHotkeys(None)
+        self.hotkeys.triggered.connect(lambda _spec: self.toggle_pet())
+        self.hotkeys.failed.connect(self._on_hotkey_failed)
+
+        # 2) 音乐感知：轮询式，全部探测函数自带 try/except，不会崩
+        self.music = MusicDetector(self.cfg, None)
+        self.music.started.connect(
+            lambda kind, title: self.pet.on_music_state(True, kind, title)
+        )
+        self.music.stopped.connect(lambda: self.pet.on_music_state(False))
+
+        # 3) 小游戏：双击宠物 / 菜单 / 托盘都能进来，靠 _rps_open 防重入
+        self._rps_open = False
+        self._rps_result = ""
+        self.pet.rps_requested.connect(self.open_rps)
+        self.pet.music_toggle_requested.connect(self.set_music_aware)
+
         self.icon = icons.app_icon(self.sprites.raw[0])
         self.app.setWindowIcon(self.icon)
         self._build_tray()
@@ -76,6 +100,9 @@ class PetApp:
         self.pet.show_intro()
         # 让出一次事件循环，先完成首帧绘制再补图鉴（不等待网络结果）
         QTimer.singleShot(0, self.gallery.startup_sync)
+        # 首帧之后再注册热键/开轮询：注册失败只弹一次托盘提示，不阻塞启动
+        QTimer.singleShot(400, lambda: self.hotkeys.set_enabled(self.cfg.hotkey_enabled))
+        self.music.set_enabled(self.cfg.music_aware)
 
     # ---------------------------------------------------------- 图标
     def refresh_icon(self) -> None:
@@ -123,15 +150,32 @@ class PetApp:
         act_sound.setChecked(self.pet.cfg.sound_enabled)
         act_sound.toggled.connect(self.pet._toggle_sound)
         fx_menu.addAction(act_sound)
+
+        act_music = QAction(icons.icon_music(), "音乐感知", fx_menu)
+        act_music.setCheckable(True)
+        act_music.setChecked(self.cfg.music_aware)
+        act_music.toggled.connect(self.set_music_aware)
+        fx_menu.addAction(act_music)
         menu.addMenu(fx_menu).setIcon(icons.icon_sparkle())
 
         act_settings = QAction(icons.icon_gear(), "设置…", menu)
         act_settings.triggered.connect(self.open_settings)
         menu.addAction(act_settings)
 
+        act_hotkey = QAction(icons.icon_check() if self.cfg.hotkey_enabled else icons.icon_gear(),
+                             "全局快捷键（Ctrl+Alt+B）", menu)
+        act_hotkey.setCheckable(True)
+        act_hotkey.setChecked(self.cfg.hotkey_enabled)
+        act_hotkey.toggled.connect(self.set_hotkey_enabled)
+        menu.addAction(act_hotkey)
+
         act_gallery = QAction(icons.icon_star(), "切换 Buddy…", menu)
         act_gallery.triggered.connect(lambda: self.open_settings(section="gallery"))
         menu.addAction(act_gallery)
+
+        act_rps = QAction(icons.icon_gift(), "石头剪刀布…", menu)
+        act_rps.triggered.connect(self.open_rps)
+        menu.addAction(act_rps)
         menu.addSeparator()
 
         act_quit = QAction(icons.icon_power(), "退出", menu)
@@ -157,7 +201,21 @@ class PetApp:
     def hide_pet(self) -> None:
         self.pet.hide()
         self.overlay.hide()
-        self.tray.showMessage("Buddy 已隐藏", "点托盘图标可以叫我回来", self.icon, 2500)
+        self.tray.showMessage(
+            "Buddy 已隐藏", "点托盘图标或按 Ctrl+Alt+B 可以叫我回来", self.icon, 2500
+        )
+
+    def toggle_pet(self) -> None:
+        """全局快捷键 / 命令通道：可见就藏，藏着就叫出来。
+
+        隐藏时窗口已经不可见，气泡没地方画 —— 所以隐藏只走托盘消息提示，
+        显示时才用气泡说一句。
+        """
+        if self.pet.isVisible():
+            self.hide_pet()
+            return
+        self.show_pet()
+        self.engine.say(lines.pick("hotkey_show"), 2.0)
 
     # ---------------------------------------------------------- 对话框
     def open_settings(self, section: str = "") -> None:
@@ -178,6 +236,11 @@ class PetApp:
         self.pet.apply_settings()
         if accepted:
             self.engine.say("设置已保存", 1.5)
+        # 面板里可能改了热键/音乐感知开关：取消与保存都要同步到真实状态
+        self.hotkeys.set_enabled(self.cfg.hotkey_enabled)
+        self.music.set_enabled(self.cfg.music_aware)
+        if not self.cfg.music_aware:
+            self.pet.on_music_state(False)
 
     def open_about(self) -> None:
         dlg = AboutDialog(self.sprites.raw[0], self.pet)
@@ -186,6 +249,86 @@ class PetApp:
             dlg.exec_()
         finally:
             self.pet.set_overlay_suppressed(False)
+
+    def open_rps(self) -> None:
+        """开一局石头剪刀布（模态）；防重入，且不阻塞其它功能。"""
+        if self._rps_open:
+            return
+        self._rps_open = True
+        self.pet.set_overlay_suppressed(True)
+        try:
+            try:
+                pixmap = self.pet.sprites.raw[0]
+            except (AttributeError, IndexError):
+                pixmap = None
+            dlg = RPSDialog(self.cfg, pixmap, self.pet)
+            dlg.round_finished.connect(self._on_rps_round)
+            dlg.exec_()
+            # 卡片是一次性的：主动销毁，别留一个隐藏窗口常驻进程
+            # （否则按 Esc 之后用 FindWindow 仍能找到一个「幽灵」窗口）
+            dlg.deleteLater()
+        except Exception:
+            # 小游戏打不开不能连累桌宠本身：说一句就继续过日子
+            self.engine.say("小游戏没打开，抱歉", 2.0)
+        finally:
+            self._rps_open = False
+            self.pet.set_overlay_suppressed(False)
+            result = self._rps_result
+            self._rps_result = ""
+            if result:
+                # 弹窗期间粒子层被压住，看不清；关掉后再放一次，让反馈真正可见
+                self._on_rps_round(result)
+                self._rps_result = ""
+            self.pet.apply_settings()
+
+    def _on_rps_round(self, result: str) -> None:
+        """一局结束：赢撒花、输起跳、平眨眼。"""
+        self._rps_result = result
+        if result == "win":
+            self.pet.play("confetti", quiet=True)
+        elif result == "lose":
+            self.pet.play("hop", quiet=True)
+        else:
+            self.pet.play("blink", quiet=True)
+
+    # ---------------------------------------------------------- 音乐感知 / 热键
+    def set_music_aware(self, checked: bool) -> None:
+        """开关音乐感知：写配置、开/关轮询、给一句气泡提示。"""
+        checked = bool(checked)
+        self.cfg.music_aware = checked
+        config.save(self.cfg)
+        self.music.set_enabled(checked)
+        if not checked:
+            # 关掉后立刻收掉律动，不然宠物会一直摇
+            self.pet.on_music_state(False)
+            self.engine.say("音乐感知已关闭", 1.8)
+        else:
+            self.engine.say("音乐感知已开启", 1.8)
+
+    def set_hotkey_enabled(self, checked: bool) -> None:
+        """开关全局快捷键：写配置并立即注册/注销。"""
+        checked = bool(checked)
+        self.cfg.hotkey_enabled = checked
+        config.save(self.cfg)
+        if not checked:
+            self.hotkeys.stop()
+            self.engine.say("全局快捷键已关闭", 1.8)
+            return
+        if self.hotkeys.set_enabled(True):
+            self.engine.say(f"按 {self.cfg.hotkey_toggle} 叫我", 2.0)
+
+    def _on_hotkey_failed(self, spec: str) -> None:
+        """注册失败：托盘提示 + 气泡，但不影响其它任何功能。"""
+        try:
+            self.tray.showMessage(
+                "全局快捷键没抢到",
+                f"{spec} 可能被别的软件占用了，可在设置里关掉",
+                self.icon,
+                3000,
+            )
+        except Exception:
+            pass
+        self.engine.say(lines.pick("hotkey_fail"), 3.0)
 
     # ---------------------------------------------------------- 外部命令（单实例唤起 / 自动化测试）
     def handle_command(self, conn) -> None:
@@ -218,6 +361,19 @@ class PetApp:
                 self.dump_gallery()
             elif cmd.startswith("skin:"):
                 self._cmd_skin(cmd.split(":", 1)[1])
+            elif cmd == "rps":
+                self.open_rps()
+            elif cmd == "music:on":
+                self.music.force(True)
+            elif cmd == "music:off":
+                self.music.force(False)
+            elif cmd == "music:status":
+                self.dump_music_status()
+            elif cmd == "hotkey:toggle":
+                self.toggle_pet()
+            elif cmd.startswith("drop:test:"):
+                # 直接喂一条路径给拖放处理，不依赖真实鼠标拖拽
+                self.pet.simulate_drop([cmd.split(":", 2)[2]])
 
     def _cmd_skin(self, rest: str) -> None:
         """``skin:<buddy_id>:<skin_id>``：直接应用（供 QA 自动化）。"""
@@ -231,6 +387,17 @@ class PetApp:
         try:
             payload = self.gallery.dump_summary()
             path = config.config_dir() / DUMP_NAME
+            path.write_text(
+                json.dumps(payload, ensure_ascii=False, indent=2, default=str), encoding="utf-8"
+            )
+        except Exception:
+            pass
+
+    def dump_music_status(self) -> None:
+        """把一次音乐探测的结果写到 ``%APPDATA%/WorkBuddyPet/music_status.json``（供 QA 断言）。"""
+        try:
+            payload = self.music.poll_now()
+            path = config.config_dir() / MUSIC_STATUS_NAME
             path.write_text(
                 json.dumps(payload, ensure_ascii=False, indent=2, default=str), encoding="utf-8"
             )
@@ -257,6 +424,15 @@ class PetApp:
 
     # ---------------------------------------------------------- 退出
     def quit(self) -> None:
+        # 先停掉系统级资源：热键不注销会一直占着这个组合键，直到进程退出
+        try:
+            self.hotkeys.stop()
+        except Exception:
+            pass
+        try:
+            self.music.stop()
+        except Exception:
+            pass
         self.cfg.pos = [self.pet.x(), self.pet.y()]
         config.save(self.cfg)
         self.overlay.hide()

@@ -1,0 +1,36 @@
+﻿python.exe : QObject::startTimer: Timers can only be used with threads started 
+with QThread
+所在位置 行:514 字符: 694
++ ... cases ==="; & $py "$root\tools\bench_music_latency.py" --cases 2>&1 | ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (QObject::startT...ed with QThread 
+   :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+QObject::startTimer: Timers can only be used with threads started with QThread
+QObject::startTimer: Timers can only be used with threads started with QThread
+QObject::startTimer: Timers can only be used with threads started with QThread
+鑴氭湰 APPDATA = C:\Users\mrhua\AppData\Local\Temp\buddy_repack2_regression
+閰嶇疆璺緞     = C:\Users\mrhua\AppData\Local\Temp\buddy_repack2_regression\WorkBuddyPet\config.json
+锛堣鍦ㄤ复鏃?APPDATA 涓嬭繍琛岋紱鏈剼鏈笉鍐欑敤鎴风湡瀹為厤缃級
+
+==============================================================================
+鍥涚被瑙﹀彂椋庨櫓 / 杈圭晫閽堝鎬х敤渚?
+==============================================================================
+  [PASS] 璇Е鍙戯細鐬椂鐖嗛煶涓嶅彂 started
+  [PASS] 璇Е鍙戯細0.5s 绯荤粺鎻愮ず闊筹紙2 涓噰鏍风偣锛変笉鍙?started
+  [PASS] 璇Е鍙戯細鎾斁涓?0.5s 闈欓煶闂撮殭涓嶅彂 stopped
+  [PASS] 婕?閲嶅瑙﹀彂锛氱湡瀹炶捣鎾€佸仠鎾悇鎭板ソ 1 娆★紱杩炵画鍚屽悜涓嶉噸澶嶅彂
+  [PASS] 鐘舵€佸悓姝ワ細force / set_enabled 鐨勪俊鍙蜂笌 _playing 涓€鑷翠笖涓嶉噸澶?
+  [PASS] force() 鍚庤嚜鍔ㄦ娴嬩粛宸ヤ綔锛氱‘璁ょ獥鍙ｆ湭婊′笉鎺ㄧ炕銆佹弧鍚庣籂姝?1 娆?
+  [PASS] 鑷姩绾犳鍚?set_enabled(False) 涓嶉噸澶嶅彂 stopped
+  [PASS] 闄嶇骇锛歱eak=None 鏃?degraded=True / kind=music / title 閫忎紶涓旇兘鍚姩
+  [PASS] 寮傚父鍏滃簳锛氭帰娴嬫姏寮傚父鏃?poll_now() 杩斿洖瀹夊叏榛樿鍊间笖瀛楁榻愬叏
+  [PASS] 鐢熷懡鍛ㄦ湡锛歟nable鈫抎isable鈫抏nable 姝ｇ‘閲嶅惎涓?stop() 骞傜瓑
+  [PASS] 鍏煎锛歘pending / _primed 璇箟淇濈暀锛屾墜鍔ㄦ帹杩涜繛缁?2 娆℃墠缈昏浆
+  [PASS] 缂撳瓨锛氱ǔ鎬侀檷棰戞灇涓剧獥鍙ｏ紝璧锋挱纭浠嶆嬁鍒版渶鏂?kind=music
+  [PASS] 鐪熷疄 QTimer锛歠orce(True) 鍚庤嚜鍔ㄦ娴嬫仮澶嶏紝闈欓煶琚瘑鍒笖鍙彂 1 娆?stopped
+  [PASS] P1 鍥炲綊锛歟nable鈫抐orce(True)鈫抏nable 鍚庣湡瀹炲仠鎾繀鍙?stopped
+  [PASS] P1 鍥炲綊锛歟nable鈫抐orce(False)鈫抏nable 鍚庣湡瀹炶捣鎾繀鍙?started
+
+鐢ㄤ緥 15/15 PASS

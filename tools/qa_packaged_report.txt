@@ -1,0 +1,189 @@
+QA 独立验收 | ROOT=C:\Users\mrhua\Desktop\桌面宠物 | python=3.13.14 | mode=static
+EXE=C:\Users\mrhua\Desktop\桌面宠物\BuddyPet_分享包\BuddyPet.exe | 用户真实配置=C:\Users\mrhua\AppData\Roaming\WorkBuddyPet\config.json
+
+========== A. 产物完整性 ==========
+[PASS] A.1_exe_同构: 分享包 size=63225313 sha256=b2fd213f561027f3c45872bd1efa3eec9f33708c3cbe422d0e10feef97dd3d96 mtime=2026-11-07 15:12:38 mtime_ns=1794035558937883600 | dist size=63225313 sha256=b2fd213f561027f3c45872bd1efa3eec9f33708c3cbe422d0e10feef97dd3d96 mtime=2026-11-07 15:12:38 mtime_ns=1794035558937883600
+[INFO] A.1_exe_体积: 63225313 B = 60.30 MiB（预期约 60~70MB）
+[PASS] A.2_zip_testzip: ZipFile.testzip()=None, 总大小=62782717 B
+[PASS] A.2_zip_恰好两文件且带前缀: namelist=['BuddyPet_分享包/BuddyPet.exe', 'BuddyPet_分享包/使用说明.txt']
+[PASS] A.2_zip_deflate: BuddyPet_分享包/BuddyPet.exe: compress_type=8 (ZIP_DEFLATED=8) 压缩后 62780166B; BuddyPet_分享包/使用说明.txt: compress_type=8 (ZIP_DEFLATED=8) 压缩后 2245B
+[PASS] A.2_zip_内容一致[BuddyPet.exe]: zip内 sha256=b2fd213f561027f3c45872bd1efa3eec9f33708c3cbe422d0e10feef97dd3d96 len=63225313 | 目录内 sha256=b2fd213f561027f3c45872bd1efa3eec9f33708c3cbe422d0e10feef97dd3d96 len=63225313
+[PASS] A.2_zip_内容一致[使用说明.txt]: zip内 sha256=dec34884f37972a498b91a541a5c0cf19b4077e893667791477c32fa15bd1408 len=4084 | 目录内 sha256=dec34884f37972a498b91a541a5c0cf19b4077e893667791477c32fa15bd1408 len=4084
+[PASS] A.3_APP_VERSION_1.3.0: 命中行 [(37, 'APP_VERSION = "1.3.0"')]
+[PASS] A.3_AboutDialog_使用_APP_VERSION: class AboutDialog 位于第 623 行；第640行 = 'version = QLabel(f"v{APP_VERSION} · 为 WorkBuddy 打造")'；正文含 APP_VERSION=True
+[PASS] A.4_说明_UTF8可读且67行: size=4084B, sha256=dec34884f37972a498b91a541a5c0cf19b4077e893667791477c32fa15bd1408, BOM=False, CRLF=0, LF=67, splitlines=67
+[PASS] A.4_新增[v1.3.0]: 命中 'v1.3.0' 于第 [3] 行
+[PASS] A.4_新增[Ctrl+Alt+B]: 命中 'Ctrl+Alt+B' 于第 [4, 28, 47, 62] 行
+[PASS] A.4_新增[拖放且绝不复制移动打开]: 命中 '绝不复制、移动或打开' 于第 [32] 行
+[PASS] A.4_新增[双击石头剪刀布]: 命中 '双击宠物' 于第 [5, 33] 行
+[PASS] A.4_新增[音乐感知]: 命中 '音乐感知' 于第 [4, 35, 47] 行
+[PASS] A.4_新增[透明区域不接收拖放]: 命中 '透明区域不接收拖放' 于第 [38] 行
+[PASS] A.4_新增[两个设置开关]: 命中 '新增两个开关' 于第 [47] 行
+[PASS] A.4_新增[快捷键被占用FAQ]: 命中 'Ctrl+Alt+B 没反应' 于第 [62] 行
+[PASS] A.4_旧功能未写错[双击托盘叫回宠物]: 命中 '双击托盘图标：从隐藏状态叫回宠物'
+[PASS] A.4_旧功能未写错[左键行为]: 命中 '左键单击：打开 WorkBuddy'
+[PASS] A.4_旧功能未写错[10个特效]: 命中 '共 10 个'
+[PASS] A.4_旧功能未写错[4皮肤]: 命中 '默认 + 樱粉 / 霜蓝 / 紫罗兰'
+[PASS] A.4_旧8节顺序保留: 章节行号 {'【这是什么】': 7, '【对方需要做什么】': 12, '【首次启动】': 16, '【基本操作】': 20, '【设置】': 44, '【配置保存在哪】': 51, '【常见问题】': 55, '【文件清单】': 65}
+[PASS] A.4_原文49行按序保留: 67 行 - 18 行新增 = 49 行；新增行号=[3, 4, 5, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 47, 48, 62, 63]；还原后首行='Buddy 桌面宠物 · 单文件版使用说明' 末行='  （配置与缓存仅存在于你自己的 AppData，本包不含任何个人信息）'
+---- 还原出的旧版 49 行（按原顺序）----
+   1| Buddy 桌面宠物 · 单文件版使用说明
+   2| ================================
+   3| 
+   4| 【这是什么】
+   5| WorkBuddy 的桌面常驻小助手（猫耳机器人 + 橙色工装）。常驻桌面、透明置顶、
+   6| 鼠标可穿透。本包是「单文件 exe」，已把所有依赖（Python、PyQt5、素材、皮肤、
+   7| 音效）全部打包进去。
+   8| 
+   9| 【对方需要做什么】
+  10|   什么都不用装。直接双击 BuddyPet.exe 即可运行。
+  11|   ⚠️ 仅支持 Windows（Win10 / Win11）。macOS / Linux 无法运行。
+  12| 
+  13| 【首次启动】
+  14|   第一次双击会在后台解压到临时目录（约 1~2 秒），之后宠物出现在桌面右下角
+  15|   并常驻系统托盘，可关闭这个说明。
+  16| 
+  17| 【基本操作】
+  18|   · 左键单击：打开 WorkBuddy（需本机已安装 WorkBuddy，否则该按钮无反应，
+  19|              不影响其它功能）
+  20|   · 右键单击：上下文菜单（互动效果 / 设置 / 切换 Buddy / 隐藏 / 退出）
+  21|   · 按住左键拖动：移动位置，松手自动记住
+  22|   · 拖到屏幕左/右/上/下边缘：自动吸附「抓住」该边
+  23|   · 鼠标靠近（约 460px 内）：眼睛会看向光标
+  24|   · 双击托盘图标：从隐藏状态叫回宠物
+  25| 
+  26|   右键菜单 → 互动效果：盲盒开箱 / 爱心暴击 / 元气弹跳 / 星光闪烁 / 彩带礼花 /
+  27|   摇摆舞步 / 眨眼卖萌 / 咖啡时间 / 摸鱼打盹 / 旋转登场（共 10 个）。
+  28|   右键菜单 → 切换 Buddy…：浏览并更换内置皮肤（默认 + 樱粉 / 霜蓝 / 紫罗兰）。
+  29| 
+  30| 【设置】
+  31|   右键 → 设置…：可调大小、不透明度、活泼程度、左键行为、定时随机互动、
+  32|   悬停提示、贴边依附、视线跟随、开机自启、WorkBuddy 路径等。
+  33|   改动即时预览，保存生效。
+  34| 
+  35| 【配置保存在哪】
+  36|   个人配置写在：C:\Users\你的用户名\AppData\Roaming\WorkBuddyPet\config.json
+  37|   （换电脑或重装系统不会带走，属正常）。
+  38| 
+  39| 【常见问题】
+  40|   · 被杀毒软件拦截 / 误报？
+  41|     单文件 exe 首次运行会解压到临时目录，部分杀软可能误报，请选择「允许 /
+  42|     信任 / 加入白名单」即可。
+  43|   · 宠物被别的窗口挡住？右键 → 始终置顶。
+  44|   · 托盘图标不见了？Windows 把它折叠进「^」里，拖出来固定即可。
+  45|   · 想开机自动启动？右键 → 设置… → 打开「开机自动启动」。
+  46| 
+  47| 【文件清单】
+  48|   BuddyPet.exe    —— 程序本体（单文件，删掉它就等于卸载，不残留）
+  49|   （配置与缓存仅存在于你自己的 AppData，本包不含任何个人信息）
+---- (end) ----
+[PASS] A.5_spec未改动: git diff -- BuddyPet.spec exit=0 stdout='' spec sha256=3a14bb6867b1b962d45c77e821254f2aa7536db1101aa44d90ee174e861a9d1c
+[PASS] A.5_旧文件仍在: {'BuddyPet_v1.1_prev.exe': True, 'BuddyPet_dbg.spec': True}; prev size=64388682B; dbg size=950B
+[INFO] A.5_spec收集方式: spec 含 collect_submodules('app')=True; 含 console=False（无控制台窗口）=True; 含 excludes=[]=True
+
+========== B. 冻结 exe 存档内容 ==========
+[INFO] B: CArchive 顶层条目=291, PYZ 模块数=152, PYZ 原始字节=1668258
+[PASS] B.模块在存档[app.lines]: PYZ 命中=True; 顶层命中=False; PYZ中所有app模块=['app', 'app.assets', 'app.audio_probe', 'app.autostart', 'app.config', 'app.effects', 'app.gallery', 'app.gallery.adapter', 'app.gallery.builtin', 'app.gallery.cache', 'app.gallery.cloud', 'app.gallery.models', 'app.gallery.provider', 'app.gallery.service', 'app.gallery.switcher', 'app.gallery.ui_section', 'app.gallery.ui_widgets', 'app.gallery.validator', 'app.gaze', 'app.hotkeys', 'app.icons', 'app.launcher', 'app.lines', 'app.music', 'app.overlay', 'app.pet_window', 'app.rps', 'app.settings_dialog', 'app.sound', 'app.theme']
+[PASS] B.模块在存档[app.hotkeys]: PYZ 命中=True; 顶层命中=False; PYZ中所有app模块=['app', 'app.assets', 'app.audio_probe', 'app.autostart', 'app.config', 'app.effects', 'app.gallery', 'app.gallery.adapter', 'app.gallery.builtin', 'app.gallery.cache', 'app.gallery.cloud', 'app.gallery.models', 'app.gallery.provider', 'app.gallery.service', 'app.gallery.switcher', 'app.gallery.ui_section', 'app.gallery.ui_widgets', 'app.gallery.validator', 'app.gaze', 'app.hotkeys', 'app.icons', 'app.launcher', 'app.lines', 'app.music', 'app.overlay', 'app.pet_window', 'app.rps', 'app.settings_dialog', 'app.sound', 'app.theme']
+[PASS] B.模块在存档[app.audio_probe]: PYZ 命中=True; 顶层命中=False; PYZ中所有app模块=['app', 'app.assets', 'app.audio_probe', 'app.autostart', 'app.config', 'app.effects', 'app.gallery', 'app.gallery.adapter', 'app.gallery.builtin', 'app.gallery.cache', 'app.gallery.cloud', 'app.gallery.models', 'app.gallery.provider', 'app.gallery.service', 'app.gallery.switcher', 'app.gallery.ui_section', 'app.gallery.ui_widgets', 'app.gallery.validator', 'app.gaze', 'app.hotkeys', 'app.icons', 'app.launcher', 'app.lines', 'app.music', 'app.overlay', 'app.pet_window', 'app.rps', 'app.settings_dialog', 'app.sound', 'app.theme']
+[PASS] B.模块在存档[app.music]: PYZ 命中=True; 顶层命中=False; PYZ中所有app模块=['app', 'app.assets', 'app.audio_probe', 'app.autostart', 'app.config', 'app.effects', 'app.gallery', 'app.gallery.adapter', 'app.gallery.builtin', 'app.gallery.cache', 'app.gallery.cloud', 'app.gallery.models', 'app.gallery.provider', 'app.gallery.service', 'app.gallery.switcher', 'app.gallery.ui_section', 'app.gallery.ui_widgets', 'app.gallery.validator', 'app.gaze', 'app.hotkeys', 'app.icons', 'app.launcher', 'app.lines', 'app.music', 'app.overlay', 'app.pet_window', 'app.rps', 'app.settings_dialog', 'app.sound', 'app.theme']
+[PASS] B.模块在存档[app.rps]: PYZ 命中=True; 顶层命中=False; PYZ中所有app模块=['app', 'app.assets', 'app.audio_probe', 'app.autostart', 'app.config', 'app.effects', 'app.gallery', 'app.gallery.adapter', 'app.gallery.builtin', 'app.gallery.cache', 'app.gallery.cloud', 'app.gallery.models', 'app.gallery.provider', 'app.gallery.service', 'app.gallery.switcher', 'app.gallery.ui_section', 'app.gallery.ui_widgets', 'app.gallery.validator', 'app.gaze', 'app.hotkeys', 'app.icons', 'app.launcher', 'app.lines', 'app.music', 'app.overlay', 'app.pet_window', 'app.rps', 'app.settings_dialog', 'app.sound', 'app.theme']
+[PASS] B.已回滚OCR不在存档[onnxruntime]: 顶层命中=[] PYZ命中=[]
+[PASS] B.已回滚OCR不在存档[rapidocr]: 顶层命中=[] PYZ命中=[]
+[PASS] B.已回滚OCR不在存档[paddle]: 顶层命中=[] PYZ命中=[]
+[PASS] B.已回滚OCR不在存档[torch]: 顶层命中=[] PYZ命中=[]
+[PASS] B.体积合理: exe 大小 63225313 B = 60.30 MiB（预期约 60~70MB；旧 OCR 版 156MB 已回滚）
+[INFO] B.archive_viewer_cli: exit=0, 输出行数=448
+    CLI 含 app.lines = True
+    CLI 含 app.hotkeys = True
+    CLI 含 app.audio_probe = True
+    CLI 含 app.music = True
+    CLI 含 app.rps = True
+[INFO] B.CLI复核: python -m PyInstaller.utils.cliutils.archive_viewer -l -r -b BuddyPet_分享包/BuddyPet.exe → exit=0
+
+========== 汇总 ==========
+总检查项=35 PASS=35 FAIL=0 信息项=3
+IS_PASS: YES
+REPORT_FILE: C:\Users\mrhua\Desktop\桌面宠物\tools\qa_packaged_report.txt
+
+QA 独立验收 | ROOT=C:\Users\mrhua\Desktop\桌面宠物 | python=3.13.14 | mode=runtime
+EXE=C:\Users\mrhua\Desktop\桌面宠物\BuddyPet_分享包\BuddyPet.exe | 用户真实配置=C:\Users\mrhua\AppData\Roaming\WorkBuddyPet\config.json
+
+========== C~F. 冻结 exe 运行时 ==========
+[INFO] TEMP_ROOT = C:\Users\mrhua\AppData\Local\Temp\buddy_packqa_9160
+[INFO] TEMP_APPDATA = C:\Users\mrhua\AppData\Local\Temp\buddy_packqa_9160\appdata
+[INFO] 用户真实配置 BEFORE = {"size": 839, "mtime_ns": 1794037705015386800, "sha256": "144866952ec5308928c0ef0becbecd9341a448d841bf53a7bd6afabd0eba202b"}
+[PASS] F.0_测试前无BuddyPet残留进程: buddy_pids={}
+[PASS] F.0_测试前无残留命名管道: QLocalSocket 连 WorkBuddyDesktopPet-1 可达=False
+
+---- C2. 不剥离 _PYI_* 的失败复现（信息项）----
+[INFO] C2: elapsed=0.33s alive=True exit=None family=[20984]
+[INFO] C2: windows=[["Error", "#32770", ["确定", "Failed to load Python DLL 'C:\\Users\\mrhua\\AppData\\Local\\Temp\\_MEI00004a342\\python313.dll'.\nLoadLibrary: 找不到指定的模块。\r\n"]], ["MSCTFIME UI", "MSCTFIME UI", []], ["Default IME", "IME", []]]
+[INFO] C2: stdout/stderr=''
+[INFO] C.2_不剥离PYI变量会失败: 独立复现：注入 {'_PYI_ARCHIVE_FILE': 'C:\\Users\\mrhua\\Desktop\\桌面宠物\\BuddyPet_分享包\\BuddyPet.exe', '_PYI_APPLICATION_HOME_DIR': 'C:\\Users\\mrhua\\AppData\\Local\\Temp\\_MEI00004a342', '_PYI_PARENT_PROCESS_LEVEL': '1'} 后 alive=True exit=None 窗口=[('Error', '#32770', ['确定', "Failed to load Python DLL 'C:\\Users\\mrhua\\AppData\\Local\\Temp\\_MEI00004a342\\python313.dll'.\nLoadLibrary: 找不到指定的模块。\r\n"]), ('MSCTFIME UI', 'MSCTFIME UI', []), ('Default IME', 'IME', [])]；判定启动失败=True。此为本会话环境污染（非产品缺陷），真实用户双击不会带这些变量
+[PASS] C.2_C2清场后无残留server: C2 清场后 BuddyPet 进程={}, QLocalServer 可达=False
+
+---- C1. 剥离 _PYI_* 后真实启动 ----
+[PASS] C.1_环境已剥离PYI变量: 会话中原有 ['_PYI_APPLICATION_HOME_DIR', '_PYI_ARCHIVE_FILE', '_PYI_PARENT_PROCESS_LEVEL']; 子进程环境剩余 []
+[PASS] C.1_进程族存活且主窗口可见: Popen.pid=4660, exit=None, family=[4660, 13196], 进程名={13196: 'BuddyPet.exe', 4660: 'BuddyPet.exe'}, 主窗口 hwnd=7015084 尺寸=215x321 IsWindowVisible=True
+[PASS] C.1_onefile父子两进程: 进程族中 BuddyPet.exe 数=2
+[PASS] C.1_无错误弹窗/Traceback/Qt插件错误: 错误窗口=[]; 全部窗口=[('Buddy 桌面宠物', 'Qt5152QWindowToolSaveBits', True, '215x321'), ('QTrayIconMessageWindow', 'Qt5152TrayIconMessageWindowClass', False, '1440x753'), ('PyInstaller Onefile Hidden Window', 'PyInstallerOnefileHiddenWindow', False, '1440x753'), ('Default IME', 'IME', False, '0x0'), ('Default IME', 'IME', False, '0x0')]
+[PASS] C.1_stdout_stderr无致命错误: stdout/stderr 长度=0, 内容=''（console=False 通常为空）
+
+---- C3. 单实例：第二个 exe 自退 ----
+[PASS] C.3_第二实例自退且不产生第二窗口: 第二实例 exit=0 elapsed=3.36s（含 onefile 解压开销）; 按尺寸识别的主窗口 hwnd 前=[7015084] 后=[7015084]（恒为1个）; 第二实例进程族可见窗口=[]; 第二实例 stdout=''
+[INFO] C.3_自退耗时分解: 墙钟 3.36s = onefile 二次解压(约 60MB) + 应用逻辑; 其中「子进程出现→整体退出」=1253ms，这才是 main() 里 QLocalSocket.connectToServer→write('show')→return 0 的应用级自退路径。墙钟 >1s 由 onefile 冷启动解压决定，与单实例逻辑无关，非缺陷
+
+---- D1. music:status ----
+[PASS] D.1_music_status_字段齐全: send=True 文件存在=True 全部字段=['degraded', 'enabled', 'kind', 'music_app', 'peak', 'playing', 'title'] 缺=[]
+[PASS] D.1_music_status_peak为float: peak=2.161302525838238e-10 type=float; degraded=False playing=False kind=audio music_app=False enabled=True; 全文={"playing": false, "kind": "audio", "title": "", "peak": 2.161302525838238e-10, "music_app": false, "degraded": false, "enabled": true}
+[INFO] D.1_说明: peak 为 float 证明 app/audio_probe.py 的 Core Audio IAudioMeterInformation 探测在冻结环境真实执行；若为 null 则是设计内 degraded 降级
+
+---- D2. drop:test:<png> ----
+[PASS] D.2_drop_count_0到1且路径正确: send=True drop_count 0->1, last_drop_path='C:\\Users\\mrhua\\AppData\\Local\\Temp\\buddy_packqa_9160\\drop_test.png' 期望='C:\\Users\\mrhua\\AppData\\Local\\Temp\\buddy_packqa_9160\\drop_test.png'
+[PASS] D.2_被拖文件只读未改动: before size=2056 mtime_ns=1794038175746181100 sha256=7630fc84b891c670090a8e14448c7dc0b1c338ea47f86be5bb07363d4cd75619 | after size=2056 mtime_ns=1794038175746181100 sha256=7630fc84b891c670090a8e14448c7dc0b1c338ea47f86be5bb07363d4cd75619
+
+---- D3. hotkey:toggle 两次 ----
+[PASS] D.3_主窗口可见性True-False-True: 主窗口 hwnd=7015084 IsWindowVisible: 初始=True 第一次=False 第二次=True
+
+---- D4. 外部抢占全局热键 ----
+[PASS] D.4_运行中外部抢占失败1409: 另一进程 RegisterHotKey(None, 0xB0B, MOD_CONTROL|MOD_ALT|MOD_NOREPEAT=0x4003, ord('B')=0x42) → 返回=False, GetLastError=1409 (期望 1409 ERROR_HOTKEY_ALREADY_REGISTERED)
+
+---- D5. 石头剪刀布（本轮补测）----
+[PASS] D.5_RPS对话框存在且唯一: send=True 命中窗口=[(17435958, '石头 · 剪刀 · 布', '380x472')]
+[PASS] D.5_防重入再发rps仍只有1个: 第二次 rps send=True, 含隐藏窗口在内 RPS 窗口数=1, hwnd列表=[(17435958, True)]
+[PASS] D.5_VK_1打一局战绩+1且进程不abort: PostMessageW(WM_KEYDOWN,VK_1)=True 到 hwnd=17435958; 战绩合计 0->1; wins=0 losses=0 draws=1; 进程 exit=None（未 abort）
+[PASS] D.5_VK_ESCAPE关闭后无幽灵窗口且进程存活: PostMessageW(WM_KEYDOWN,VK_ESCAPE)=True; 残留 RPS 窗口数=0; 桌宠进程 exit=None; 主窗口仍可见=True
+
+---- quit 收尾 ----
+[PASS] C.6_quit进程正常退出无残留: send quit=True, exit=0, 残留 BuddyPet 进程={}
+[PASS] C.6_退出日志无Traceback/DLL错误: stdout/stderr 长度=0, 内容=''
+
+---- D4(续). quit 后热键已注销 ----
+[PASS] D.4_quit后可重新注册成功: 带 MOD_NOREPEAT: ok=True err=0; 不带: ok=True err=0（均已立即 UnregisterHotKey 清理）
+
+========== E. 旧字段配置兼容性（信息项）==========
+[INFO] E: 本会话中用户真实配置被【外部进程】改写：任务书基线 647B/sha0658df67…(15:02:29) → 当前 839B/sha14486695…(15:48:25)，已含全部新字段与 rps 战绩。故 E 段不拿「当前真实配置」当旧格式样本，而是按基线记录精确重建一份旧字段格式配置（字段只到 gallery_auto_sync）。
+[PASS] E.0_重建647B旧格式样本: 重建样本字段数=25, 末字段=gallery_auto_sync, 缺失新字段=['hotkey_enabled', 'hotkey_toggle', 'music_aware', 'last_drop_path', 'drop_count', 'rps_wins', 'rps_losses', 'rps_draws'], 文件=C:\Users\mrhua\AppData\Local\Temp\buddy_packqa_9160\e_appdata\WorkBuddyPet\config.json
+[PASS] E.1_源码config.load自动补齐且保留旧值: 方式=源码 python -c 'from app import config; config.load()'（APPDATA 指向临时目录）; exit=0; 旧值={'size': 120, 'liveliness': 1.8, 'pos': [1818, 197], 'seen_intro': True, 'last_effect': 'hop', 'left_click': 'open'}; 新字段={'hotkey_enabled': True, 'hotkey_toggle': 'Ctrl+Alt+B', 'music_aware': True, 'drop_count': 0, 'last_drop_path': '', 'rps_wins': 0, 'rps_losses': 0, 'rps_draws': 0}; stderr=''
+[PASS] E.2_冻结exe用旧配置启动不报错且窗口出现: 主窗口 hwnd=9373988 尺寸=132x192（旧 size=120 故不同于默认 215x321）; exit=None; 错误窗口=[]
+[PASS] E.2_冻结exe落盘配置含新字段且保留旧值: send=True; 落盘旧值={'size': 120, 'liveliness': 1.8, 'pos': [1818, 197], 'seen_intro': True, 'left_click': 'open'}; 落盘新字段={'hotkey_enabled': True, 'hotkey_toggle': 'Ctrl+Alt+B', 'music_aware': True, 'drop_count': 1, 'last_drop_path': 'C:\\Users\\mrhua\\AppData\\Local\\Temp\\buddy_packqa_9160\\e_drop.png', 'rps_wins': 0, 'rps_losses': 0, 'rps_draws': 0}; last_effect='hearts'（exe 播放特效可按设计改写，故不作严格断言）
+[PASS] E.2_旧配置场景quit干净退出: quit send=True exit=0 stdout/stderr=''
+[INFO] E.2_pos说明: E 段在 quit 之前读取落盘配置，pos 仍为 [1818,197]；PetApp.quit() 会按设计把 pos 覆写为当前窗口坐标，非缺陷
+
+---- E3. 复制「当前真实配置」再跑冻结 exe（信息项）----
+[INFO] E3: 复制当前真实配置 size=839 sha256=144866952ec5308928c0ef0becbecd9341a448d841bf53a7bd6afabd0eba202b 到 C:\Users\mrhua\AppData\Local\Temp\buddy_packqa_9160\e2_appdata\WorkBuddyPet
+[PASS] E.3_当前真实配置副本启动冻结exe不报错: 主窗口命中=True exit=None 错误窗口=[] （复制件，原件未动）
+[PASS] E.3_当前真实配置副本quit干净: quit send=True exit=0 stdout/stderr=''
+
+========== F. 收尾 ==========
+[PASS] F.1_用户真实配置指纹零写入: BEFORE {"size": 839, "mtime_ns": 1794037705015386800, "sha256": "144866952ec5308928c0ef0becbecd9341a448d841bf53a7bd6afabd0eba202b"} | AFTER {"size": 839, "mtime_ns": 1794037705015386800, "sha256": "144866952ec5308928c0ef0becbecd9341a448d841bf53a7bd6afabd0eba202b"}
+[INFO] F.1_基线漂移说明: 任务书基线 size=647/mtime_ns=1794034949476671900/sha256=0658df67b2c1bb959e6447aacf0ada3a1dcd5c2c6a459b752ef1b507dc47cd0b (15:02:29) 在本会话中已被【外部进程】改写为 size=839/mtime_ns=1794037705015386800/sha256=144866952ec5… (15:48:25)，文件已含全部新字段与 rps 战绩 1/4/2。本 QA 的所有 exe/源码 load 均用临时 APPDATA，harness 内 BEFORE==AFTER 证明零写入；该外部改写按任务书约定不算失败、不修改、不修复
+[PASS] F.2_无残留BuddyPet进程: buddy_pids={}
+[PASS] F.2_无残留命名管道: QLocalSocket 连 WorkBuddyDesktopPet-1 可达=False
+[PASS] F.2_全局热键可重新注册: RegisterHotKey(None,0xB0B,0x4003,ord('B')) → ok=True err=0（成功后已 UnregisterHotKey）
+[PASS] F.3_临时目录已清理: rmtree(C:\Users\mrhua\AppData\Local\Temp\buddy_packqa_9160) exists=False
+
+========== 汇总 ==========
+总检查项=34 PASS=34 FAIL=0 信息项=5
+IS_PASS: YES

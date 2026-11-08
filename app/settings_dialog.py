@@ -31,10 +31,10 @@ from PyQt5.QtWidgets import (
 )
 
 from . import autostart, icons, theme
-from .config import GALLERY_OWNED_FIELDS, LEFT_CLICK_CHOICES, Settings, save
+from .config import GALLERY_OWNED_FIELDS, LEFT_CLICK_CHOICES, STATS_OWNED_FIELDS, Settings, save
 from .gallery.ui_section import GallerySection
 
-APP_VERSION = "1.0.0"
+APP_VERSION = "1.3.1"
 
 
 class Switch(QWidget):
@@ -343,6 +343,16 @@ class SettingsDialog(CardDialog):
         self.gaze_switch.toggled.connect(self._on_gaze)
         self._row("视线跟随鼠标", self.gaze_switch)
 
+        # 全局快捷键（仅 Windows 生效；关掉后不影响拖放/双击/音乐感知）
+        self.hotkey_switch = Switch(cfg.hotkey_enabled)
+        self.hotkey_switch.toggled.connect(self._on_hotkey)
+        self._row("全局快捷键（Ctrl+Alt+B）", self.hotkey_switch)
+
+        # 音乐感知（有声音时跳舞/眨眼；完全可关）
+        self.music_switch = Switch(cfg.music_aware)
+        self.music_switch.toggled.connect(self._on_music)
+        self._row("音乐感知", self.music_switch)
+
         self.sound_switch = Switch(cfg.sound_enabled)
         self.sound_switch.toggled.connect(self._on_sound)
         self._row("音效", self.sound_switch)
@@ -500,6 +510,14 @@ class SettingsDialog(CardDialog):
         self.cfg.gaze_follow = checked
         self._changed()
 
+    def _on_hotkey(self, checked: bool) -> None:
+        self.cfg.hotkey_enabled = checked
+        self._changed()
+
+    def _on_music(self, checked: bool) -> None:
+        self.cfg.music_aware = checked
+        self._changed()
+
     def _on_sound(self, checked: bool) -> None:
         self.cfg.sound_enabled = checked
         self._changed()
@@ -535,7 +553,7 @@ class SettingsDialog(CardDialog):
         """
         defaults = Settings()
         for key, value in defaults.to_dict().items():
-            if key in GALLERY_OWNED_FIELDS:
+            if key in GALLERY_OWNED_FIELDS or key in STATS_OWNED_FIELDS:
                 continue
             setattr(self.cfg, key, value)
         self._sync_widgets()
@@ -572,6 +590,8 @@ class SettingsDialog(CardDialog):
         self.hint_switch.setChecked(self.cfg.bubble_hint)
         self.edge_switch.setChecked(self.cfg.edge_cling)
         self.gaze_switch.setChecked(self.cfg.gaze_follow)
+        self.hotkey_switch.setChecked(self.cfg.hotkey_enabled)
+        self.music_switch.setChecked(self.cfg.music_aware)
         self.sound_switch.setChecked(self.cfg.sound_enabled)
         self.top_switch.setChecked(self.cfg.always_on_top)
         self.lock_switch.setChecked(self.cfg.lock_pos)
@@ -584,13 +604,15 @@ class SettingsDialog(CardDialog):
         super().accept()
 
     def reject(self) -> None:
-        """取消：回滚快照中「非图鉴」字段。
+        """取消：回滚快照中「非图鉴、非统计」字段。
 
         ``GALLERY_OWNED_FIELDS`` 不进回滚 —— 图鉴是立即提交，取消设置面板
         不应该把已经切换好的皮肤退回去（否则界面显示与磁盘状态不一致）。
+        ``STATS_OWNED_FIELDS``（拖放计数 / 战绩）同样不回滚 —— 那是使用数据，
+        不是设置项，回滚设置不该把战绩清掉。
         """
         for key, value in self._snapshot.items():
-            if key in GALLERY_OWNED_FIELDS:
+            if key in GALLERY_OWNED_FIELDS or key in STATS_OWNED_FIELDS:
                 continue
             setattr(self.cfg, key, value)
         save(self.cfg)

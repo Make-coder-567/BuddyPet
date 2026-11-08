@@ -1,0 +1,145 @@
+QA 独立验收 | Edward | repack2 v1.3.1 | 静态部分
+ROOT=C:\Users\mrhua\Desktop\桌面宠物
+执行时间=2026-11-08 09:39:18  python=C:\Users\mrhua\python-sdk\python3.13.2\python.exe
+
+==============================================================================
+A. 产物完整性（全部现场复算）
+==============================================================================
+A.1 分享包 exe : {'size': 63228783, 'mtime_ns': 1794100827127933700, 'mtime': '2026-11-08 09:20:27', 'sha256': 'c907fd8804d898b569e256c1ee570917df70b5dfe276a9bcb0ceef197ce50f19'}
+A.1 dist   exe : {'size': 63228783, 'mtime_ns': 1794100827127933700, 'mtime': '2026-11-08 09:20:27', 'sha256': 'c907fd8804d898b569e256c1ee570917df70b5dfe276a9bcb0ceef197ce50f19'}
+[PASS] A.1_exe_同构: share size=63228783 sha256=c907fd8804d898b569e256c1ee570917df70b5dfe276a9bcb0ceef197ce50f19 mtime=2026-11-08 09:20:27 mtime_ns=1794100827127933700 | dist size=63228783 sha256=c907fd8804d898b569e256c1ee570917df70b5dfe276a9bcb0ceef197ce50f19 mtime=2026-11-08 09:20:27 mtime_ns=1794100827127933700
+[PASS] A.1_确实不是旧v1.3.0构建: 本次 size=63228783 sha256=c907fd8804d898b569e256c1ee570917df70b5dfe276a9bcb0ceef197ce50f19 | 上一轮QA报告 v1.3.0 size=63225313 sha256=b2fd213f561027f3c45872bd1efa3eec9f33708c3cbe422d0e10feef97dd3d96
+[PASS] A.1_与v1.1_prev也不同: prev size=64388682 sha256=774357295fb16e57eca913a21d67a275b37ad2b7fcbc61a0d33d6d5791fa813e
+A.2 zip size=62785594 mtime=2026-11-08 09:23:11 testzip()=None namelist=['BuddyPet_分享包/BuddyPet.exe', 'BuddyPet_分享包/使用说明.txt']
+[PASS] A.2_testzip: testzip()=None
+[PASS] A.2_恰好两文件且带前缀: namelist=['BuddyPet_分享包/BuddyPet.exe', 'BuddyPet_分享包/使用说明.txt']
+      BuddyPet_分享包/BuddyPet.exe: file_size=63228783 compress_size=62782889 compress_type=8 (ZIP_DEFLATED=8)
+      BuddyPet_分享包/使用说明.txt: file_size=4443 compress_size=2399 compress_type=8 (ZIP_DEFLATED=8)
+[PASS] A.2_均为deflate: compress_types=[8, 8]
+      内容一致[BuddyPet_分享包/BuddyPet.exe]: zip len=63228783 sha256=c907fd8804d898b569e256c1ee570917df70b5dfe276a9bcb0ceef197ce50f19 | 目录 len=63228783 sha256=c907fd8804d898b569e256c1ee570917df70b5dfe276a9bcb0ceef197ce50f19 -> True
+      内容一致[BuddyPet_分享包/使用说明.txt]: zip len=4443 sha256=2f7f2f108408b3f8efe63cf3f767ce660644e2b8f6180ea7e1501d405433941c | 目录 len=4443 sha256=2f7f2f108408b3f8efe63cf3f767ce660644e2b8f6180ea7e1501d405433941c -> True
+[PASS] A.2_zip内两文件与目录内一致: zip总大小=62785594 B
+[INFO] A: zip 总大小 = 62785594 B；内部两文件压缩后合计 62785288 B
+A.3 line37='APP_VERSION = "1.3.1"'
+A.3 line640='        version = QLabel(f"v{APP_VERSION} · 为 WorkBuddy 打造")'
+[PASS] A.3_APP_VERSION_1.3.1: line37='APP_VERSION = "1.3.1"'
+[PASS] A.3_第640行消费APP_VERSION: line640='        version = QLabel(f"v{APP_VERSION} · 为 WorkBuddy 打造")'
+[PASS] A.3_全文仅1处1.3.1且0处1.3.0: count('1.3.1')=1 count('1.3.0')=0
+A.4 size=4443B sha256=2f7f2f108408b3f8efe63cf3f767ce660644e2b8f6180ea7e1501d405433941c BOM=False CRLF=0 LF=70 splitlines=70 ends_with_0A=True
+[PASS] A.4_UTF8可读_70行_无BOM: size=4443B sha256=2f7f2f108408b3f8efe63cf3f767ce660644e2b8f6180ea7e1501d405433941c splitlines=70
+[PASS] A.4_顶部版本v1.3.1: line3='版本 v1.3.1'
+[PASS] A.4_含v1.3.1优化说明: 命中行号=[3, 6]
+[PASS] A.4_含新增音乐感知FAQ: 命中行号=[65]
+[PASS] A.4_旧8章节齐全且顺序保留: 章节行号 {'【这是什么】': 8, '【对方需要做什么】': 13, '【首次启动】': 17, '【基本操作】': 21, '【设置】': 45, '【配置保存在哪】': 52, '【常见问题】': 56, '【文件清单】': 68}
+[PASS] A.4_旧功能条目全部仍在且未写错: 缺失=[]；命中 16/16 项
+[PASS] A.4_旧v1.3.0的67行按原顺序完整保留[sha256重建]: 重建命中数=1；删除行号=(6, 65, 66)；重建 sha256=dec34884f37972a498b91a541a5c0cf19b4077e893667791477c32fa15bd1408 size=4084（上一轮QA报告基准）
+      本版相对 v1.3.0 的精确差异：新增 3 行 = [6, 65, 66]
+        +6| '          v1.3.1：音乐感知响应更快（起播/停播识别从约 12~14 秒降到 1~2 秒），并修复状态同步问题。'
+        +65| '  · 音乐感知没反应？它只在检测到系统默认输出设备的音频活动时做视觉反馈，'
+        +66| '    不播放声音、也不控制播放器；若声音从蓝牙耳机等非默认设备输出，可能检测不到。'
+        改写第 3 行: '版本 v1.3.1'  ->  '版本 v1.3.0'
+      还原后行数=67（期望 67） 首行='Buddy 桌面宠物 · 单文件版使用说明' 末行='  （配置与缓存仅存在于你自己的 AppData，本包不含任何个人信息）'
+[PASS] A.4_上一轮QA报告49行原文仍为子序列: 旧 49 行逐行按序命中当前 70 行 = True（旧功能未写错/未删）
+[PASS] A.5_spec未被改动: spec sha256=3a14bb6867b1b962d45c77e821254f2aa7536db1101aa44d90ee174e861a9d1c | 上一轮QA报告基准 3a14bb6867b1b962d45c77e821254f2aa7536db1101aa44d90ee174e861a9d1c
+[PASS] A.5_旧文件与assets仍在: {'BuddyPet_v1.1_prev.exe': True, 'BuddyPet_dbg.spec': True, 'requirements.txt': True, 'assets/': True}
+      requirements.txt 内容 = 'PyQt5>=5.15.0\npillow>=10.0.0\n'
+
+==============================================================================
+B. 冻结 exe 存档内容 —— 独立解析 CArchive / PYZ / marshal / dis
+==============================================================================
+B.0 运行解释器: 3.13.2 (main, Mar 17 2025, 21:04:07) [MSC v.1943 64 bit (AMD64)]
+B.0 解释器 MAGIC_NUMBER = f30d0d0a
+B.0 cookie: exe_size=63228783 cookie_offset=63228695 archive_start=579072 python_version_field=313 python_libname='python313.dll'
+B.0 CArchive 顶层条目数=291 options=['pyi-contents-directory _internal']
+B.0 PYZ 条目 = ['PYZ.pyz']
+[PASS] B.0_CArchive可解析且有唯一PYZ: PYZ条目=['PYZ.pyz'], 顶层条目=291, pylib='python313.dll', pyvers=313
+B.0 PYZ 原始字节 = 1670683 B; header=b'PYZ\x00\xf3\r\r\n\x00\x19j.'
+B.0 PYZ pymagic = f30d0d0a toc_offset=1665582 PYZ模块数=152
+[PASS] B.0_PYZ字节码版本与运行解释器匹配: PYZ pymagic=f30d0d0a | 运行解释器 MAGIC=f30d0d0a (3.13.x)
+B.0 PYZ 顶层模块示例 = ['PyQt5', '__future__', '_aix_support', '_colorize', '_compat_pickle', '_compression', '_opcode_metadata', '_py_abc', '_pydatetime', '_pydecimal', '_pyi_rth_utils', '_strptime', '_threading_local', 'app', 'argparse', 'ast', 'base64', 'bisect', 'bz2', 'calendar', 'contextlib', 'contextvars', 'copy', 'csv', 'ctypes', 'dataclasses', 'datetime', 'decimal', 'dis', 'email', 'fnmatch', 'fractions', 'getopt', 'gettext', 'glob', 'gzip', 'hashlib', 'importlib', 'inspect', 'ipaddress']
+[INFO] B: CArchive 顶层条目=291, PYZ 模块数=152 (上一轮 v1.3.0 QA 报告: 顶层=291, PYZ=152)
+[PASS] B.模块在PYZ[app.lines]: PYZ命中=True; 顶层命中=False
+[PASS] B.模块在PYZ[app.hotkeys]: PYZ命中=True; 顶层命中=False
+[PASS] B.模块在PYZ[app.audio_probe]: PYZ命中=True; 顶层命中=False
+[PASS] B.模块在PYZ[app.music]: PYZ命中=True; 顶层命中=False
+[PASS] B.模块在PYZ[app.rps]: PYZ命中=True; 顶层命中=False
+      PYZ 中所有 app 模块 = ['app', 'app.assets', 'app.audio_probe', 'app.autostart', 'app.config', 'app.effects', 'app.gallery', 'app.gallery.adapter', 'app.gallery.builtin', 'app.gallery.cache', 'app.gallery.cloud', 'app.gallery.models', 'app.gallery.provider', 'app.gallery.service', 'app.gallery.switcher', 'app.gallery.ui_section', 'app.gallery.ui_widgets', 'app.gallery.validator', 'app.gaze', 'app.hotkeys', 'app.icons', 'app.launcher', 'app.lines', 'app.music', 'app.overlay', 'app.pet_window', 'app.rps', 'app.settings_dialog', 'app.sound', 'app.theme']
+[PASS] B.已回滚OCR不在存档[onnxruntime]: 顶层命中=[] PYZ命中=[]（宽松子串命中=[]）
+[PASS] B.已回滚OCR不在存档[rapidocr]: 顶层命中=[] PYZ命中=[]（宽松子串命中=[]）
+[PASS] B.已回滚OCR不在存档[paddle]: 顶层命中=[] PYZ命中=[]（宽松子串命中=[]）
+[PASS] B.已回滚OCR不在存档[torch]: 顶层命中=[] PYZ命中=[]（宽松子串命中=[]）
+[PASS] B.music_取到code_object
+B.music code: name='<module>' filename='app\\music.py' co_names(前30)=['__doc__', '__future__', 'annotations', 'time', 'PyQt5.QtCore', 'QObject', 'QTimer', 'pyqtSignal', '', 'audio_probe', 'POLL_MS', 'FIRST_DELAY_MS', 'START_PEAK', 'STOP_PEAK', 'DEBOUNCE', 'START_CONFIRM_MS', 'STOP_CONFIRM_MS', 'APP_SCAN_EVERY', 'MusicDetector']
+B.music 模块级常量 = ['音乐感知状态机：把「系统在放音频」翻译成宠物能理解的事件。\n\n判定逻辑\n-------\n1. 每 ``POLL_MS``（500 毫秒）轮询一次：\n   - ``probe_peak()`` 读默认输出设备的峰值电平；\n   - ``detect_music_app()`` 看有没有音乐播放器窗口（稳态下按\n     ``APP_SCAN_EVERY`` 复用上次结果，省掉反复枚举窗口）。\n2. 起播阈值 ``0.004``、停播阈值 ``0.0015``（滞回），避免音量抖动来回翻转；\n3. 状态翻转需 **连续 ``DEBOUNCE`` 次同向采样**，且在真实定时器路径下还要\n   满足**方向相关的确认窗口**：起播 ``START_CONFIRM_MS`` 短（快速响应），\n   停播 ``STOP_CONFIRM_MS`` 长（跨过歌曲里 0.3~1s 的静音间隙）。\n   一次瞬时的「砰」或歌曲里的短暂停顿都不会让宠物跳舞 / 收律动；\n4. ``playing=True`` 且命中音乐应用 → ``kind="music"``，否则 ``kind="audio"``；\n5. ``peak is None``（没有音频设备 / 非 Windows）时降级为只看音乐应用，标记 ``degraded``。\n\n首次采样只建档、不发信号 —— 否则一开机宠物就跳舞。注意：周期缩到\n``POLL_MS=500`` 后，QTimer 的首个 tick（约 0.5s）就会建档，\n``FIRST_DELAY_MS`` 的 singleShot 只是兜底（届时 ``_primed`` 已为真，直接返回）；\n「首采不发任何信号」这一可观察语义不变。\n只在状态翻转时发 ``started`` / ``stopped`` / ``state``。\n\n延迟说明\n-------\n旧实现 ``POLL_MS=8000`` + 连续 2 次确认，最坏 16s、均值约 12s；而单次探测\n实测约 5.8ms，延迟几乎全部来自轮询节奏而非探测成本。现在延迟 = 采样相位\n（0~POLL_MS）+ 确认窗口：起播 ≈ 1.0~1.5s，停播 ≈ 1.5~2.0s；500ms 周期下\n探测约占 1.1% 单核，缩短周期的代价可以忽略。\n\n``_tick()`` 被手动同步推进（QA / 调试，没有墙钟）时沿用旧的「连续 N 次」\n口径，既有回归脚本行为不变；只有 QTimer 回调才启用 ``time.monotonic()``\n累积的确认窗口与窗口枚举缓存。\n', 0, None, 1, 500, 1500, 0.004, 0.0015, 2, 600, 1200, 4, 'MusicDetector']
+B.music 模块级 STORE_NAME = ['__doc__', 'annotations', 'time', 'QObject', 'QTimer', 'pyqtSignal', 'audio_probe', 'POLL_MS', 'FIRST_DELAY_MS', 'START_PEAK', 'STOP_PEAK', 'DEBOUNCE', 'START_CONFIRM_MS', 'STOP_CONFIRM_MS', 'APP_SCAN_EVERY', 'MusicDetector']
+[PASS] B.music_模块级常量[POLL_MS=500]: co_names命中=True, co_consts命中=True; 实际常量=[0, 1, 500, 1500, 0.004, 0.0015, 2, 600, 1200, 4]
+[PASS] B.music_模块级常量[START_CONFIRM_MS=600]: co_names命中=True, co_consts命中=True; 实际常量=[0, 1, 500, 1500, 0.004, 0.0015, 2, 600, 1200, 4]
+[PASS] B.music_模块级常量[STOP_CONFIRM_MS=1200]: co_names命中=True, co_consts命中=True; 实际常量=[0, 1, 500, 1500, 0.004, 0.0015, 2, 600, 1200, 4]
+[PASS] B.music_模块级常量[APP_SCAN_EVERY=4]: co_names命中=True, co_consts命中=True; 实际常量=[0, 1, 500, 1500, 0.004, 0.0015, 2, 600, 1200, 4]
+[PASS] B.music_模块级常量[DEBOUNCE=2]: co_names命中=True, co_consts命中=True; 实际常量=[0, 1, 500, 1500, 0.004, 0.0015, 2, 600, 1200, 4]
+[PASS] B.music_模块级常量[START_PEAK=0.004]: co_names命中=True, co_consts命中=True; 实际常量=[0, 1, 500, 1500, 0.004, 0.0015, 2, 600, 1200, 4]
+[PASS] B.music_模块级常量[STOP_PEAK=0.0015]: co_names命中=True, co_consts命中=True; 实际常量=[0, 1, 500, 1500, 0.004, 0.0015, 2, 600, 1200, 4]
+[PASS] B.music_P1修复_manual_override彻底不存在: 命中=[]；递归扫描 code object 数=14
+[PASS] B.music_time.monotonic被真实引用: import time=True; 指令命中=['<module>:LOAD_CONST(音乐感知状态机：把「系统在放音频」翻译成宠物能理解的事件。\n\n判定逻辑\n-------\n1. 每 ``POLL_MS``（500 毫秒）轮询一次：\n   - ``probe_peak()`` 读默认输出设备的峰值电平；\n   - ``detect_music_app()`` 看有没有音乐播放器窗口（稳态下按\n     ``APP_SCAN_EVERY`` 复用上次结果，省掉反复枚举窗口）。\n2. 起播阈值 ``0.004``、停播阈值 ``0.0015``（滞回），避免音量抖动来回翻转；\n3. 状态翻转需 **连续 ``DEBOUNCE`` 次同向采样**，且在真实定时器路径下还要\n   满足**方向相关的确认窗口**：起播 ``START_CONFIRM_MS`` 短（快速响应），\n   停播 ``STOP_CONFIRM_MS`` 长（跨过歌曲里 0.3~1s 的静音间隙）。\n   一次瞬时的「砰」或歌曲里的短暂停顿都不会让宠物跳舞 / 收律动；\n4. ``playing=True`` 且命中音乐应用 → ``kind="music"``，否则 ``kind="audio"``；\n5. ``peak is None``（没有音频设备 / 非 Windows）时降级为只看音乐应用，标记 ``degraded``。\n\n首次采样只建档、不发信号 —— 否则一开机宠物就跳舞。注意：周期缩到\n``POLL_MS=500`` 后，QTimer 的首个 tick（约 0.5s）就会建档，\n``FIRST_DELAY_MS`` 的 singleShot 只是兜底（届时 ``_primed`` 已为真，直接返回）；\n「首采不发任何信号」这一可观察语义不变。\n只在状态翻转时发 ``started`` / ``stopped`` / ``state``。\n\n延迟说明\n-------\n旧实现 ``POLL_MS=8000`` + 连续 2 次确认，最坏 16s、均值约 12s；而单次探测\n实测约 5.8ms，延迟几乎全部来自轮询节奏而非探测成本。现在延迟 = 采样相位\n（0~POLL_MS）+ 确认窗口：起播 ≈ 1.0~1.5s，停播 ≈ 1.5~2.0s；500ms 周期下\n探测约占 1.1% 单核，缩短周期的代价可以忽略。\n\n``_tick()`` 被手动同步推进（QA / 调试，没有墙钟）时沿用旧的「连续 N 次」\n口径，既有回归脚本行为不变；只有 QTimer 回调才启用 ``time.monotonic()``\n累积的确认窗口与窗口枚举缓存。\n)', '_on_tick:LOAD_ATTR(monotonic)', '_tick:LOAD_ATTR(monotonic)']
+[PASS] B.music_旧POLL_MS=8000未作为模块级int常量: 模块级 int 常量=[0, 1, 500, 1500, 2, 600, 1200, 4]; 含'8000'的字符串常量(docstring)=1 处（允许）
+      docstring 提及: '音乐感知状态机：把「系统在放音频」翻译成宠物能理解的事件。\n\n判定逻辑\n-------\n1. 每 ``POLL_MS``（500 毫秒）轮询一次：\n   - ``probe_pea' ...
+[PASS] B.music_冻结字节码常量与最新源码编译一致: 源码数值常量=[0, 1, 500, 1500, 0.004, 0.0015, 2, 600, 1200, 4] | 冻结数值常量=[0, 1, 500, 1500, 0.004, 0.0015, 2, 600, 1200, 4] | docstring一致=True
+B.settings_dialog: 含'1.3.1'的字符串常量=['1.3.1']
+[PASS] B.settings_dialog_内嵌1.3.1且无1.3.0: 1.3.1命中=1 1.3.0命中=0 []
+---- app.music 模块级 STORE_NAME 指令片段 ----
+         58 LOAD_CONST   500
+         60 STORE_NAME   POLL_MS
+         66 LOAD_CONST   0.004
+         68 STORE_NAME   START_PEAK
+         70 LOAD_CONST   0.0015
+         72 STORE_NAME   STOP_PEAK
+         74 LOAD_CONST   2
+         76 STORE_NAME   DEBOUNCE
+         78 LOAD_CONST   600
+         80 STORE_NAME   START_CONFIRM_MS
+         82 LOAD_CONST   1200
+         84 STORE_NAME   STOP_CONFIRM_MS
+         86 LOAD_CONST   4
+         88 STORE_NAME   APP_SCAN_EVERY
+---- (end) ----
+
+==============================================================================
+D. 用户真实配置 BEFORE 基线（只读记录，禁止修改）
+==============================================================================
+D.BEFORE path=C:\Users\mrhua\AppData\Roaming\WorkBuddyPet\config.json
+D.BEFORE {"size": 836, "mtime_ns": 1794045001003603000, "mtime": "2026-11-07 17:50:01", "sha256": "6fe4269006a0724abb9537689662ffcdb78e4763ba44576973379dad91ed586f"}
+D.BEFORE 关键用户设置 = {"size": 120, "liveliness": 1.8, "pos": [1818, 180]}
+[PASS] D.0_基线已记录: size=836 sha256=6fe4269006a0724abb9537689662ffcdb78e4763ba44576973379dad91ed586f mtime_ns=1794045001003603000
+
+==============================================================================
+E. 改动范围 / 无新增依赖（mtime + sha256 现场清单）
+==============================================================================
+      app/music.py                           size=     14789 mtime=2026-11-07 18:49:07 sha256=ba24871c6b40d5e8…
+      app/audio_probe.py                     size=      7662 mtime=2026-11-07 14:14:24 sha256=c4db3f1ba683893b…
+      app/pet_window.py                      size=     62267 mtime=2026-11-07 14:42:20 sha256=d7578bc1424633fd…
+      app/config.py                          size=      6625 mtime=2026-11-07 14:15:08 sha256=b029b502f97a5a0c…
+      app/hotkeys.py                         size=      8673 mtime=2026-11-07 14:14:10 sha256=d9034273964039a4…
+      app/lines.py                           size=      5037 mtime=2026-11-07 14:13:49 sha256=a7be0ca5bd812c3e…
+      app/rps.py                             size=     16990 mtime=2026-11-07 14:47:28 sha256=402348c5164cf832…
+      app/settings_dialog.py                 size=     25422 mtime=2026-11-08 09:17:24 sha256=121b077a734cd98d…  <== 本次打包窗口(11-08 09:00~09:30)
+      main.py                                size=     19941 mtime=2026-11-07 14:47:31 sha256=e9979a4cc0ca2d88…
+      BuddyPet.spec                          size=       947 mtime=2026-11-07 13:45:40 sha256=3a14bb6867b1b962…
+      requirements.txt                       size=        31 mtime=2026-11-07 13:45:40 sha256=ec3f3efd9d74fa2c…
+      .build_temp/pet_icon.ico               size=    270398 mtime=2026-11-07 13:46:43 sha256=a23f0e7bcfb69352…
+      BuddyPet_分享包/使用说明.txt                  size=      4443 mtime=2026-11-08 09:18:27 sha256=2f7f2f108408b3f8…  <== 本次打包窗口(11-08 09:00~09:30)
+      BuddyPet_分享包/BuddyPet.exe              size=  63228783 mtime=2026-11-08 09:20:27 sha256=c907fd8804d898b5…  <== 本次打包窗口(11-08 09:00~09:30)
+      dist/BuddyPet.exe                      size=  63228783 mtime=2026-11-08 09:20:27 sha256=c907fd8804d898b5…  <== 本次打包窗口(11-08 09:00~09:30)
+      BuddyPet_分享包.zip                       size=  62785594 mtime=2026-11-08 09:23:11 sha256=f9bb1184edc29552…  <== 本次打包窗口(11-08 09:00~09:30)
+E. 本次打包窗口内时间戳更新的文件 = ['app/settings_dialog.py', 'BuddyPet_分享包/使用说明.txt', 'BuddyPet_分享包/BuddyPet.exe', 'dist/BuddyPet.exe', 'BuddyPet_分享包.zip']
+[PASS] E.1_本次改动范围恰为5文件: 实际=['BuddyPet_分享包.zip', 'BuddyPet_分享包/BuddyPet.exe', 'BuddyPet_分享包/使用说明.txt', 'app/settings_dialog.py', 'dist/BuddyPet.exe'] | 期望=['BuddyPet_分享包.zip', 'BuddyPet_分享包/BuddyPet.exe', 'BuddyPet_分享包/使用说明.txt', 'app/settings_dialog.py', 'dist/BuddyPet.exe']
+[PASS] E.2_music.py仍为18:49优化版未被本次改动: app/music.py sha256=ba24871c6b40d5e812a39f94ee2d2d2385144ae014fd7a779f39d23758c9537a (基准前缀 ba24871c…); mtime=2026-11-07 18:49:07
+[PASS] E.3_spec与上一轮QA报告一致: spec sha256=3a14bb6867b1b962d45c77e821254f2aa7536db1101aa44d90ee174e861a9d1c
+[PASS] E.4_requirements仅PyQt5+pillow_无新增第三方依赖: requirements.txt = 'PyQt5>=5.15.0\npillow>=10.0.0\n'
+E. assets/ 文件数 = 80（未改动，mtime 均早于本次打包窗口）
+[PASS] E.5_assets仍在: assets 文件数=80
+
+==============================================================================
+静态部分汇总
+==============================================================================
+PASS=50 FAIL=0 INFO=2
+STATIC_IS_PASS: YES

@@ -1,0 +1,8 @@
+pid=25180 appdata=C:\Users\mrhua\AppData\Local\Temp\buddy_diag_28844\appdata
+dialogs=[18549246]
+--- dialog 0x11b09fe title='Error' ---
+    ('0x106066e', 'Button', '确定')
+    ('0x2bf0676', 'Static', '')
+    ('0x1ee076e', 'Static', "Failed to load Python DLL 'C:\\Users\\mrhua\\AppData\\Local\\Temp\\_MEI00004a342\\python313.dll'.\nLoadLibrary: 找不到指定的模块。\r\n")
+STDOUT_LOG = ''
+killed diagnostic instance

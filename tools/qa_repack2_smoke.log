@@ -1,0 +1,642 @@
+﻿python.exe : This plugin does not support raise()
+所在位置 行:514 字符: 334
++ ... , offscreen) ==="; & $py "$root\tools\smoke_features.py" 2>&1 | Out-F ...
++                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (This plugin does not support rais 
+   e():String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+This plugin does not support propagateSizeHints()
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+This plugin does not support setting window masks
+This plugin does not support raise()
+This plugin does not support raise()
+This plugin does not support raise()
+This plugin does not support raise()
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+QFontDatabase: Cannot find font directory C:/Users/mrhua/AppData/Local/Programs
+/Python/Python314/Lib/site-packages/PyQt5/Qt5/lib/fonts.
+Note that Qt no longer ships fonts. Deploy some (from https://dejavu-fonts.gith
+ub.io/ for example) or switch to fontconfig.
+This plugin does not support raise()
+PASS config: hotkey_toggle=Ctrl+Alt+B music_aware=True
+PASS pet_window 鏋勯€?
+PASS lines: 21 涓睜锛屾渶闀?15 瀛?
+PASS hotkeys.parse_spec
+PASS audio_probe: peak=0.6261303424835205 music_app=(False, '')
+PASS drop: bubble='鏀跺埌銆屽啋鐑熸祴璇曞浘.png銆?72 B' count=1
+PASS drop 澶氬舰鎬? count=5 last='https://example.com/a.png'
+PASS music groove: 0.138 on=False
+PASS MusicDetector.force: [('started', 'music', '娴嬭瘯鏇?), ('stopped',)]
+PASS judge 9/9
+PASS RPSDialog: 鎴樼哗 0 鑳?路 1 骞?路 0 璐?/ 浣?鐭冲ご 鎴?鐭冲ご
+PASS 閿洏 1/2/3/Esc/Enter锛堟棤 AttributeError銆佹棤娈嬬暀瀹氭椂鍣級
+PASS 鍘嬬缉鍖呮皵娉? '鏀跺埌銆宷a_arc.zip銆?204 B'
+PASS 闊充箰 stopped 鍘婚噸
+PASS 鍗曞嚮/鍙屽嚮瀹氭椂鍣?
+PASS 鎷栨斁浜嬩欢閾? drop_count=7
+PASS hotkeys 娉ㄥ唽: ok=True registered=True锛堥潪 Windows 涓嬩负 False 灞炴甯革級
+PASS PetApp 瑁呴厤锛堝欢杩熸敞鍐?/ 闊充箰杞 / 鐘舵€佽惤鐩?/ 娉ㄩ攢锛?
+ALL PASS

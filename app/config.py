@@ -31,6 +31,20 @@ GALLERY_OWNED_FIELDS: tuple[str, ...] = (
     "seen_intro",
 )
 
+#: 新增「统计类」字段：只增不减的计数与最后一次拖放路径。
+#: 设置面板的 `_reset()` / `reject()` 同样必须跳过 —— 这些不是「设置项」，
+#: 而是使用数据，回滚设置不应该把战绩清掉。
+STATS_OWNED_FIELDS: tuple[str, ...] = (
+    "drop_count",
+    "last_drop_path",
+    "rps_wins",
+    "rps_losses",
+    "rps_draws",
+)
+
+#: 全局快捷键默认组合键
+DEFAULT_HOTKEY = "Ctrl+Alt+B"
+
 
 def config_dir() -> Path:
     base = os.environ.get("APPDATA") or str(Path.home())
@@ -73,6 +87,16 @@ class Settings:
     gallery_last_sync: str = ""           # 上次成功同步时间（ISO8601，仅展示冗余）
     gallery_auto_sync: bool = True        # 启动时是否异步拉取一次
 
+    # ---------------- 新增能力（全局热键 / 音乐感知 / 拖放 / 小游戏） ----------------
+    hotkey_enabled: bool = True           # 是否启用全局快捷键
+    hotkey_toggle: str = DEFAULT_HOTKEY   # 唤出/隐藏的组合键（形如 "Ctrl+Alt+B"）
+    music_aware: bool = True              # 是否感知系统音频/音乐并做出反应
+    last_drop_path: str = ""              # 最后一次拖入的文件（仅记录，不复制）
+    drop_count: int = 0                   # 累计拖入文件数
+    rps_wins: int = 0                     # 石头剪刀布：胜
+    rps_losses: int = 0                   # 石头剪刀布：负
+    rps_draws: int = 0                    # 石头剪刀布：平
+
     def clamp(self) -> "Settings":
         self.size = int(max(120, min(360, self.size)))
         self.opacity = float(max(0.35, min(1.0, self.opacity)))
@@ -93,6 +117,15 @@ class Settings:
         self.gallery_auto_sync = bool(self.gallery_auto_sync)
         # ---- 音效字段 ----
         self.sound_volume = float(max(0.0, min(1.0, self.sound_volume)))
+        # ---- 新增能力字段 ----
+        self.hotkey_enabled = bool(self.hotkey_enabled)
+        self.music_aware = bool(self.music_aware)
+        self.hotkey_toggle = str(self.hotkey_toggle or "").strip() or DEFAULT_HOTKEY
+        self.last_drop_path = str(self.last_drop_path or "")
+        self.drop_count = max(0, int(self.drop_count))
+        self.rps_wins = max(0, int(self.rps_wins))
+        self.rps_losses = max(0, int(self.rps_losses))
+        self.rps_draws = max(0, int(self.rps_draws))
         return self
 
     def to_dict(self) -> dict[str, Any]:

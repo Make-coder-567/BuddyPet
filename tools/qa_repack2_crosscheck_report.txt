@@ -1,0 +1,9 @@
+exe 内嵌 PYZ.pyz      : len=1670683 sha256=6f3fa29cad0e53ad4046f56efc6bb9d822054a8d074bde010861b17117382fd1
+build/BuddyPet/PYZ-00.pyz: len=1670683 sha256=6f3fa29cad0e53ad4046f56efc6bb9d822054a8d074bde010861b17117382fd1 mtime=1794100800266331600
+[PASS] exe内PYZ与本次构建PYZ-00.pyz字节完全一致: True
+[INFO] exe cookie: pylib=python313.dll pyvers=313 顶层条目=291
+[PASS] Analysis-00.toc OCR关键词命中={'onnxruntime': 0, 'rapidocr': 0, 'paddle': 0, 'torch': 0} (size=101520)
+[PASS] PKG-00.toc OCR关键词命中={'onnxruntime': 0, 'rapidocr': 0, 'paddle': 0, 'torch': 0} (size=48627)
+[PASS] PYZ-00.toc OCR关键词命中={'onnxruntime': 0, 'rapidocr': 0, 'paddle': 0, 'torch': 0} (size=19596)
+[PASS] EXE-00.toc OCR关键词命中={'onnxruntime': 0, 'rapidocr': 0, 'paddle': 0, 'torch': 0} (size=50341)
+[INFO] warn-BuddyPet.txt 前 600 字符: "\nThis file lists modules PyInstaller was not able to find. This does not\nnecessarily mean these modules are required for running your program. Both\nPython's standard library and 3rd-party Python packages often conditionally\nimport optional modules, some of which may be available only on certain\nplatforms.\n\nTypes of import:\n* top-level: imported at the top-level - look at these first\n* conditional: imported within an if-statement\n* delayed: imported within a function\n* optional: imported within a try-except-statement\n\nIMPORTANT: Do NOT post this list to the issue-tracker. Use it as a basis for\n"

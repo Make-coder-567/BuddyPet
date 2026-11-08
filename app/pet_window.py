@@ -7,10 +7,10 @@ import time
 from pathlib import Path
 
 from PyQt5.QtCore import QElapsedTimer, QPoint, QPointF, QRect, QRectF, QSize, Qt, QTimer, pyqtSignal
-from PyQt5.QtGui import QColor, QCursor, QPainter, QPen, QRadialGradient
+from PyQt5.QtGui import QColor, QCursor, QPainter, QPen, QRadialGradient, QRegion
 from PyQt5.QtWidgets import QAction, QApplication, QMenu, QWidget
 
-from . import icons, launcher, theme
+from . import icons, launcher, lines, theme
 from .assets import BuddySprites
 from .config import Settings, save
 from .effects import EFFECT_ORDER, EFFECTS, EffectEngine, Pose
@@ -26,6 +26,28 @@ EDGE_SNAP = 28          # 距离屏幕侧边多少像素内松手会贴上去
 EDGE_PIVOT_Y = 0.76     # 抓握点高度（相对身高，1.0 为头顶）
 EDGE_TILT = 16.0        # 侧边悬挂的基础倾角
 
+# ---------------------------------------------------------------- 拖放分类
+#: 扩展名集合（小写、不带点）。分类只影响「反馈用哪个特效 + 哪句台词」，
+#: 不影响任何文件本身 —— 拖进来只是「看一眼」，绝不复制/移动/打开文件。
+DROP_IMAGE = frozenset("png jpg jpeg gif webp bmp svg ico".split())
+DROP_AUDIO = frozenset("mp3 wav flac m4a ogg aac wma".split())
+DROP_CODE = frozenset(
+    "py js ts tsx jsx java c cpp h cs go rs json yaml yml html css sh bat".split()
+)
+DROP_DOC = frozenset("doc docx pdf txt md ppt pptx xls xlsx csv".split())
+DROP_ARCHIVE = frozenset("zip rar 7z tar gz".split())
+
+#: 分类 -> 落地后的互动特效
+DROP_EFFECT: dict[str, str] = {
+    "image": "hearts",
+    "audio": "dance",
+    "code": "sparkle",
+    "doc": "sparkle",
+    "archive": "box",
+    "other": "box",
+}
+
+
 
 class PetWindow(QWidget):
     settings_requested = pyqtSignal()
@@ -36,6 +58,10 @@ class PetWindow(QWidget):
     sprites_changed = pyqtSignal()
     #: 请求打开图鉴分组（右键「切换 Buddy…」/ 托盘同名项）
     gallery_requested = pyqtSignal()
+    #: 请求开一局石头剪刀布（双击宠物 / 菜单 / 托盘 / 命令通道）
+    rps_requested = pyqtSignal()
+    #: 请求切换「音乐感知」开关（右键菜单勾选项；真正的落盘由 main 负责）
+    music_toggle_requested = pyqtSignal(bool)
 
     def __init__(self, cfg: Settings, sprites: BuddySprites, engine: EffectEngine, overlay: EffectOverlay, root: Path):
         flags = Qt.FramelessWindowHint | Qt.Tool | Qt.NoDropShadowWindowHint
@@ -90,6 +116,19 @@ class PetWindow(QWidget):
         self._grip_hop = 0.0
         self._grab_settle = 0.0
         self._regrip_at = 0.0
+
+        # ---------------- 拖放 / 音乐律动 / 单击-双击区分（本次新增） ----------------
+        # 接收文件拖放：拖入时整窗可绘制（虚线框），落下后按类型给反应
+        self.setAcceptDrops(True)
+        self._drag_over = False      # 是否有文件正悬在宠物上方
+        self._drag_phase = 0.0       # 拖入脉冲的相位（_tick 里推进）
+        self._music_on = False       # 音乐感知：当前是否「在响」
+        self._music_groove = 0.0     # 律动权重 0~1，向目标缓动
+        # 单击延迟定时器：单击必须等一个双击间隔再执行，否则双击会先触发一次单击
+        self._click_timer = QTimer(self)
+        self._click_timer.setSingleShot(True)
+        self._click_timer.timeout.connect(self._on_click)
+        self._ignore_click = False   # 双击后抑制紧随其后的那次单击
 
         self._apply_geometry(initial=True)
         self._detect_edge_from_pos()
@@ -599,6 +638,14 @@ class PetWindow(QWidget):
         pose.sy *= 1 + 0.028 * self._hover
         pose.dy -= 3.0 * self._hover
 
+        # 拖入态「接住」脉冲：轻微放大 + 呼吸光晕，表示「我准备好了」
+        if self._drag_over:
+            self._drag_phase += dt * 5.0
+            pulse = 0.5 + 0.5 * math.sin(self._drag_phase)
+            pose.sx *= 1 + 0.035 * pulse
+            pose.sy *= 1 + 0.035 * pulse
+            pose.glow = max(pose.glow, 0.35 + 0.2 * pulse)
+
         # 拖拽倾斜
         if self._dragging:
             now = time.monotonic()
@@ -641,6 +688,15 @@ class PetWindow(QWidget):
             if self._t >= self._regrip_at and not self.engine.is_busy():
                 self._regrip()
 
+        # 音乐律动：权重缓动到目标后再叠加极小幅度摆动，
+        # 关掉音乐（或拖动中）时 grooves 会自然衰减回 0，不会突然「定格」
+        groove_target = 1.0 if (self._music_on and not self._dragging) else 0.0
+        self._music_groove += (groove_target - self._music_groove) * min(1.0, dt * 2.5)
+        if self._music_groove > 0.001:
+            groove = self._music_groove * liveliness
+            pose.rot += 1.8 * groove * math.sin(math.tau * self._t / 2.6)
+            pose.dy += 1.0 * groove * math.sin(math.tau * self._t / 1.3)
+
         # 随机眨眼
         if not self.engine.is_busy() and pose.eyes is None:
             self._blink_in -= dt
@@ -653,7 +709,8 @@ class PetWindow(QWidget):
         self._pose = pose
         self._update_gaze(dt)
         airborne = abs(pose.dy) > 3.0
-        if airborne != self._airborne_mask:
+        # 拖入态用的是全窗遮罩（要画出宠物外的虚线框），此时不要去切轮廓遮罩
+        if not self._drag_over and airborne != self._airborne_mask:
             self._apply_mask(airborne)
 
         self.update()
@@ -745,6 +802,15 @@ class PetWindow(QWidget):
         painter.setRenderHints(
             QPainter.Antialiasing | QPainter.TextAntialiasing | QPainter.SmoothPixmapTransform
         )
+
+        # 拖入态：先在窗口坐标系画一圈橙色虚线框（宠物画在它上面），
+        # 让「松手就会接住」这件事一眼可见
+        if self._drag_over:
+            painter.setPen(QPen(QColor(255, 122, 61, 190), 2, Qt.DashLine))
+            painter.setBrush(QColor(255, 122, 61, 18))
+            painter.drawRoundedRect(QRectF(self.rect().adjusted(8, 8, -8, -8)), 16, 16)
+            painter.setBrush(Qt.NoBrush)
+
         pose = self._pose
         w, h = self._sprite_w, self._sprite_h
         cx, feet_y = self._feet.x(), self._feet.y()
@@ -785,6 +851,9 @@ class PetWindow(QWidget):
     # ------------------------------------------------------------ 鼠标
     def mousePressEvent(self, event) -> None:
         if event.button() == Qt.LeftButton:
+            # 新的一次按下：取消上一次还没落地的单击（也顺带清掉双击抑制）
+            self._click_timer.stop()
+            self._ignore_click = False
             self._press_global = event.globalPos()
             self._press_offset = event.globalPos() - self.pos()
             self._press_ms = time.monotonic()
@@ -836,8 +905,26 @@ class PetWindow(QWidget):
             return
         elapsed_ms = (time.monotonic() - self._press_ms) * 1000
         if elapsed_ms <= CLICK_MAX_MS:
-            self._on_click()
+            if self._ignore_click:
+                # 刚刚是双击的第二下松手：已经把「双击」交给 mouseDoubleClickEvent 了
+                self._ignore_click = False
+            else:
+                # 延后一个双击间隔再执行单击，给双击留出识别时间
+                delay = min(260, int(QApplication.doubleClickInterval()))
+                self._click_timer.start(max(120, delay))
         super().mouseReleaseEvent(event)
+
+    def mouseDoubleClickEvent(self, event) -> None:
+        """双击宠物 → 石头剪刀布。单击被推迟，所以这里要先取消它。"""
+        if event.button() == Qt.LeftButton:
+            self._click_timer.stop()
+            self._ignore_click = True
+            self._dragging = False
+            self.sfx.play("click")
+            self.rps_requested.emit()
+            event.accept()
+            return
+        super().mouseDoubleClickEvent(event)
 
     def _on_click(self) -> None:
         # 无论哪种左键模式，都先响一声点击音
@@ -873,6 +960,253 @@ class PetWindow(QWidget):
             return
         self._hint_shown = True
         self.engine.say("左键打开 WorkBuddy · 右键看菜单", 2.6)
+
+    # ------------------------------------------------------------ 拖放文件
+    def dragEnterEvent(self, event) -> None:
+        """有文件悬到宠物身上：接住 + 视觉/听觉/台词三重反馈。"""
+        try:
+            data = event.mimeData()
+        except Exception:
+            data = None
+        if data is not None and data.hasUrls():
+            event.acceptProposedAction()
+            self._drag_enter()
+            return
+        event.ignore()
+
+    def dragMoveEvent(self, event) -> None:
+        """悬停移动：持续接住事件，否则 Windows 会认为拖放取消。"""
+        try:
+            data = event.mimeData()
+        except Exception:
+            data = None
+        if data is not None and data.hasUrls():
+            event.acceptProposedAction()
+            return
+        event.ignore()
+
+    def dragLeaveEvent(self, event) -> None:
+        self._drag_exit()
+        super().dragLeaveEvent(event)
+
+    def dropEvent(self, event) -> None:
+        """松手：先退出拖入态（还原遮罩），再按内容给反馈。"""
+        self._drag_exit()
+        urls: list = []
+        try:
+            data = event.mimeData()
+            if data is not None:
+                urls = list(data.urls() or [])
+        except Exception:
+            urls = []
+        self._handle_drop_urls(urls)
+        try:
+            event.acceptProposedAction()
+        except Exception:
+            pass
+        self.update()
+
+    def _drag_enter(self) -> None:
+        """进入拖入态：整窗可绘制（虚线框画在宠物外面也得看得到）。"""
+        if self._drag_over:
+            return
+        self._drag_over = True
+        self._drag_phase = 0.0
+        self.setMask(QRegion(self.rect()))
+        self.sfx.play("hover")
+        self.engine.say(lines.pick("drag_enter"), 2.0)
+        self.update()
+
+    def _drag_exit(self) -> None:
+        """退出拖入态：恢复宠物轮廓遮罩（贴边时走贴边轮廓）。"""
+        if not self._drag_over:
+            return
+        self._drag_over = False
+        self._apply_mask(self._airborne_mask)
+        self.update()
+
+    def _handle_drop_urls(self, urls) -> None:
+        """把 QUrl 列表拆成 本地文件 / 本地文件夹 / 远程链接 三桶。"""
+        files: list[str] = []
+        folders: list[str] = []
+        remote: list[str] = []
+        for url in list(urls or []):
+            try:
+                local = bool(url.isLocalFile())
+                text = url.toLocalFile() if local else url.toString()
+            except Exception:
+                continue
+            text = str(text or "").strip()
+            if not text:
+                continue
+            if not local:
+                remote.append(text)
+                continue
+            try:
+                is_dir = Path(text).is_dir()
+            except OSError:
+                is_dir = False
+            (folders if is_dir else files).append(text)
+        self._apply_drop(files, folders, remote)
+
+    def _apply_drop(self, files: list[str], folders: list[str], remote: list[str]) -> None:
+        """拖放落地的统一处理入口（``dropEvent`` 与 ``simulate_drop`` 共用）。"""
+        count = len(files) + len(folders) + len(remote)
+        if count <= 0:
+            return
+        self.sfx.play("complete")
+
+        # 注意顺序：**先 play() 再 say()**。
+        # box 这类特效在自己的 on_start() 里会 say 一句（如「开个盲盒…」），
+        # 若先 say 文件名再 play，就会同一帧被特效台词覆盖，用户看不到名字。
+        # 所以统一「特效先起、气泡后写」，保证文件名/大小是最终显示的那句。
+
+        # ---- 多份：一次性庆祝，只报总数 ----
+        if count > 1:
+            self.play("confetti", quiet=True)
+            self.engine.say(f"收到 {count} 个文件！", 2.0)
+            self._record_drop((files or folders or remote)[0], count)
+            self._say_later(lines.pick("drop_multi", n=count))
+            return
+
+        # ---- 单个远程链接 ----
+        if remote:
+            link = remote[0]
+            self.play("sparkle", quiet=True)
+            self.engine.say(f"收到「{self._short_name(link, 18)}」", 2.0)
+            self._record_drop(link, 1)
+            self._say_later(lines.pick("drop_url"))
+            return
+
+        # ---- 单个文件夹 ----
+        if folders:
+            path = folders[0]
+            name = self._short_name(Path(path).name or path)
+            self.play("box", quiet=True)
+            self.engine.say(f"收到文件夹「{name}」", 2.0)
+            self._record_drop(path, 1)
+            self._say_later(lines.pick("drop_folder"))
+            return
+
+        # ---- 单个文件：按扩展名分类 ----
+        path = files[0]
+        category = self._classify(path)
+        name = self._short_name(Path(path).name or path)
+        size = self._fmt_size(path)
+        suffix = f" {size}" if size else ""
+        self.play(DROP_EFFECT.get(category, "box"), quiet=True)
+        self.engine.say(f"收到「{name}」{suffix}", 2.0)
+        self._record_drop(path, 1)
+        self._say_later(lines.pick(f"drop_{category}"))
+
+    @staticmethod
+    def _classify(path: str) -> str:
+        """按扩展名把文件归到 image/audio/code/doc/archive/other。"""
+        try:
+            ext = Path(str(path or "")).suffix.lstrip(".").lower()
+        except Exception:
+            return "other"
+        if not ext:
+            return "other"
+        if ext in DROP_IMAGE:
+            return "image"
+        if ext in DROP_AUDIO:
+            return "audio"
+        if ext in DROP_CODE:
+            return "code"
+        if ext in DROP_DOC:
+            return "doc"
+        if ext in DROP_ARCHIVE:
+            return "archive"
+        return "other"
+
+    @staticmethod
+    def _fmt_size(path: str) -> str:
+        """把文件大小格式化成 ``12 KB`` / ``3.4 MB``；读不到就返回空串。"""
+        try:
+            num = float(Path(str(path or "")).stat().st_size)
+        except (OSError, ValueError):
+            return ""
+        if num < 1024:
+            return f"{int(num)} B"
+        if num < 1024 * 1024:
+            return f"{num / 1024:.0f} KB"
+        return f"{num / (1024 * 1024):.1f} MB"
+
+    @staticmethod
+    def _short_name(text: str, limit: int = 14) -> str:
+        """文件名太长会把气泡撑爆，超长截断加省略号。"""
+        base = str(text or "").strip()
+        if not base:
+            return ""
+        if len(base) <= limit:
+            return base
+        return base[: max(1, limit - 1)] + "…"
+
+    def _record_drop(self, first_path: str, count: int) -> None:
+        """记录拖放统计（只记录，不复制/移动任何文件）。"""
+        try:
+            self.cfg.drop_count = int(self.cfg.drop_count) + int(count)
+            if first_path:
+                self.cfg.last_drop_path = str(first_path)
+            save(self.cfg)
+        except Exception:
+            pass
+
+    def _say_later(self, text: str, delay_ms: int = 1900, duration: float = 1.8) -> None:
+        """首句报完名字/大小之后，再补一句分类台词（气泡一次只显示一句）。"""
+        if not text:
+            return
+
+        def _emit() -> None:
+            if self.isVisible():
+                self.engine.say(text, duration)
+
+        QTimer.singleShot(delay_ms, _emit)
+
+    def simulate_drop(self, paths: list[str]) -> None:
+        """QA/命令通道专用：不依赖 ``QDropEvent``，直接走同一套拖放处理。"""
+        files: list[str] = []
+        folders: list[str] = []
+        remote: list[str] = []
+        for raw in list(paths or []):
+            text = str(raw or "").strip()
+            if not text:
+                continue
+            if text.startswith(("http://", "https://")):
+                remote.append(text)
+                continue
+            try:
+                is_dir = Path(text).is_dir()
+            except OSError:
+                is_dir = False
+            if is_dir:
+                folders.append(text)
+            else:
+                files.append(text)
+        self._apply_drop(files, folders, remote)
+
+    # ------------------------------------------------------------ 音乐感知反馈
+    def on_music_state(self, playing: bool, kind: str = "music", title: str = "") -> None:
+        """音乐感知状态变化：开/关律动 + 说一句。
+
+        Args:
+            playing: 现在是否「在响」。
+            kind: ``"music"``（识别到音乐播放器）或 ``"audio"``（只是有声音）。
+            title: 音乐窗口标题，可能为空。
+        """
+        self._music_on = bool(playing)
+        if not playing:
+            self.engine.say(lines.pick("music_stop"), 2.0)
+            return
+        if self._drag_over or self._dragging or not self.isVisible():
+            return
+        # 音乐 → 跳舞；只是有声音（视频/通话）→ 轻轻眨个眼，不喧宾夺主
+        self.play("dance" if kind == "music" else "blink", quiet=True)
+        if kind == "music" and str(title or "").strip():
+            self.engine.say(lines.pick("music_start_track", title=self._short_name(title, 12)), 2.4)
+        else:
+            self.engine.say(lines.pick("music_start"), 2.2)
 
     # ------------------------------------------------------------ 动作
     def play(self, effect_id: str, quiet: bool = False) -> None:
@@ -970,7 +1304,18 @@ class PetWindow(QWidget):
         act_sound.setChecked(self.cfg.sound_enabled)
         act_sound.toggled.connect(self._toggle_sound)
         fx_menu.addAction(act_sound)
+
+        # 音乐感知开关：只发信号，落盘与检测器开关由 main 统一负责（避免两处写配置）
+        act_music = QAction(icons.icon_music(), "音乐感知", fx_menu)
+        act_music.setCheckable(True)
+        act_music.setChecked(self.cfg.music_aware)
+        act_music.toggled.connect(self.music_toggle_requested.emit)
+        fx_menu.addAction(act_music)
         menu.addMenu(fx_menu).setIcon(icons.icon_sparkle())
+
+        act_rps = QAction(icons.icon_gift(), "石头剪刀布…", menu)
+        act_rps.triggered.connect(self.rps_requested.emit)
+        menu.addAction(act_rps)
 
         act_settings = QAction(icons.icon_gear(), "设置…", menu)
         act_settings.setShortcut("Ctrl+,")
