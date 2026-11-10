@@ -10,6 +10,7 @@ WorkBuddy 的桌面常驻小助手。形象取自 WorkBuddy 成长中心的「�
 - **Ctrl+Alt+B** → 全局唤出 / 隐藏（在别的程序里也生效）
 - **拖入文件** → 按类型给不同反应（图片冒心、音频跳舞、代码闪光…）
 - **检测到音乐/音频** → 自己摇两下
+- **一段时间没操作电脑** → 自己松开边缘、在屏幕里自由溜达；你一回来就小跑归位
 - 待机呼吸、随机眨眼、定时小互动；10 个可切换的互动特效
 
 ---
@@ -52,6 +53,7 @@ pip install -r requirements.txt
 | 鼠标悬停 | 轻微放大 + 首次提示气泡 |
 | 鼠标靠近（460px 内） | 眼睛转向光标，头部跟着微偏；**中心与四边（左/右/上/下贴边）都生效**；超出范围回正 |
 | 系统开始放音乐 / 有声音 | 原地小幅度摇摆（音乐）或眨一下眼（其它音频），停了就停 |
+| 一段时间无任何键鼠操作 | 自动在屏幕内溜达、走走停停、偶尔冒一句；一旦有输入便小跑回原位 |
 
 左键行为可在设置里改成「播放互动效果」或「无操作」。
 
@@ -61,7 +63,7 @@ pip install -r requirements.txt
 打开 WorkBuddy
 ────────────────
 互动效果 ▶   随机来一个 / 10 个特效 / 待机随机互动
-              音效 ✓ / 音乐感知 ✓
+              空闲自动漫游 ✓ / 音效 ✓ / 音乐感知 ✓
 石头剪刀布…
 设置…  Ctrl+,
 全局快捷键（Ctrl+Alt+B） ✓
@@ -207,6 +209,65 @@ pip install -r requirements.txt
 
 ---
 
+## 空闲自动漫游
+
+没人碰电脑一会儿，Buddy 会松开边缘下地溜达；你一动键鼠，它就小跑回原来的位置坐好。
+
+### 怎么判断「人不在」
+
+| 项 | 值 / 行为 |
+| --- | --- |
+| 空闲来源 | Windows `GetLastInputInfo` —— 读的是**全系统**最后一次键鼠输入，不是本进程的输入 |
+| 轮询 | 500 ms 一次；单次调用约 0.01 ms，几乎零开销 |
+| 进入空闲 | 连续 2 次采样都超过阈值（默认 3 分钟）才触发，避免采样相位抖动 |
+| 退出空闲 | 一次采样低于阈值就立刻结束，唤醒延迟 ≤ 500 ms |
+| 首次采样 | 只建档不发信号 —— 刚开机不会自己跑起来；若建档时人已离开，下一 tick 仍会正常触发 |
+| 非 Windows / API 失败 | 退化为「光标是否移动 + 应用内活动」近似判断，状态里标记 `degraded=true` |
+| 离屏 / 无 GUI | 直接判定不可用，返回 `idle_sec=null`，**绝不误报空闲**（自动化测试靠 `force()` 驱动） |
+
+`GetLastInputInfo` 的 `dwTime` 用无符号 32 位减法处理 `GetTickCount` 的 49.7 天回绕，不需要 `GetTickCount64`。
+
+### 它会做什么
+
+状态机：`off → walk ⇄ pause → return → off`。
+
+| 状态 | 行为 |
+| --- | --- |
+| `walk` | 在**当前屏幕可用区域**内选目标（排除任务栏）：离当前点 120 px ~ 屏宽 75%，六成落在下半「地面带」，四成允许满屏跑；速度有上限、靠近目标减速，绝不瞬移。步态是上下起伏 + 左右摆角 + 起步轻微侧身 |
+| `pause` | 到达后停 1.2~4.0 s；限频 10~22 s 且引擎空闲时，随机说一句或放一个小特效（眨眼 / 爱心 / 星光 / 弹跳 / 咖啡 / 打盹） |
+| `return` | 说一句「你回来啦」，以同样的步态跑回原位，恢复原来的贴边抓握状态 |
+
+边界与不打扰：
+
+1. **位置语义**：漫游全程**不写 `cfg.pos`、不落盘**。归位后仍在老地方；意外退出 / 崩溃后重启也不会停在半路。关掉「回来时归位」时，结束才把落点记为新家。
+2. **打断**：直接点宠物会**就地停住**（不瞬移 —— 否则 `mousePressEvent` 里算的拖拽偏移会错位），并把落点记成新位置；随后检测器补发的 `idle_ended` 在 `off` 状态下是幂等的。
+3. **让路**：锁定位置、宠物隐藏、设置/游戏/右键菜单打开时不启动；拖拽中不移动窗口；待机随机互动、音乐律动照常叠加，互不打架。
+4. 漫游期间固定使用「带抬升余量」的轮廓遮罩，避免步态反复穿过 `±3px` 阈值导致每帧 `setMask` 来回切换。
+
+### 设置项
+
+设置 → 交互，或右键 / 托盘菜单 → 互动效果 → **空闲自动漫游**。
+
+| 选项 | 默认 | 范围 / 说明 |
+| --- | --- | --- |
+| 空闲自动漫游 | 开 | 总开关；关掉时立即归位 |
+| 触发空闲时长 | 3 分钟 | 1~30 分钟 |
+| 漫游速度 | 78 px/s | 30~180；再乘活泼程度 `0.65 + 0.35 × liveliness` |
+| 回来时归位 | 开 | 关掉则就地停住，并把落点记为新位置 |
+| 漫游时随机互动 | 开 | 关掉就只安静走路 |
+
+### 不用等 3 分钟就能预览
+
+单实例命令通道支持强制注入（`idle:on` 保持 60 秒，期间不被自动轮询纠正）：
+
+```bat
+python -c "from PyQt5.QtWidgets import QApplication;from PyQt5.QtNetwork import QLocalSocket;a=QApplication([]);s=QLocalSocket();s.connectToServer('WorkBuddyDesktopPet-1');s.write(b'idle:on');s.flush();s.waitForBytesWritten(500)"
+```
+
+把 `idle:on` 换成 `idle:off` 立刻收场、`roam:toggle` 切总开关、`idle:status` 把检测明细与漫游状态写到 `%APPDATA%\WorkBuddyPet\idle_status.json`（含 `idle_sec / threshold_sec / source / degraded / forced / roam.state / roam.pos / roam.home`）。
+
+---
+
 ## 石头剪刀布
 
 **双击宠物**（或右键菜单 →「石头剪刀布…」/ 托盘菜单 / 命令 `rps`）开一局。
@@ -234,7 +295,7 @@ lines.pick("music_start_track", title="晴天")   # → 在放《晴天》，真
 lines.pick("drop_image")                        # → 好漂亮的图！
 ```
 
-共 21 个池（热键、拖入/拖出、9 种拖放分类、音乐、石头剪刀布），每个池 3–5 句，单句不超过 22 字、不用彩色 emoji（气泡字体不稳）。缺 key 自动回退到通用句，格式化失败返回原文 —— 永远不会因为台词抛异常。
+共 24 个池（热键、拖入/拖出、9 种拖放分类、音乐、石头剪刀布、空闲漫游），每个池 3–5 句，单句不超过 22 字、不用彩色 emoji（气泡字体不稳）。缺 key 自动回退到通用句，格式化失败返回原文 —— 永远不会因为台词抛异常。
 
 ---
 
@@ -243,7 +304,7 @@ lines.pick("drop_image")                        # → 好漂亮的图！
 | 分组 | 选项 |
 | --- | --- |
 | 外观 | 大小 120–360 px、不透明度 35–100%、活泼程度 20–180% |
-| 交互 | 左键行为、待机呼吸动画、定时随机互动（间隔 1–60 分钟）、悬停提示气泡、贴边依附、视线跟随鼠标、**全局快捷键（Ctrl+Alt+B）**、**音乐感知** |
+| 交互 | 左键行为、待机呼吸动画、定时随机互动（间隔 1–60 分钟）、**空闲自动漫游**（阈值 1–30 分钟、速度 30–180 px/s、回来时归位、漫游时随机互动）、悬停提示气泡、贴边依附、视线跟随鼠标、**全局快捷键（Ctrl+Alt+B）**、**音乐感知** |
 | 系统 | 始终置顶、锁定位置、开机自动启动、WorkBuddy 程序路径 |
 
 改动即时预览，**保存**生效，**取消**回滚。配置落在 `%APPDATA%\WorkBuddyPet\config.json`。
@@ -265,6 +326,7 @@ lines.pick("drop_image")                        # → 好漂亮的图！
 │   ├── hotkeys.py          全局快捷键（RegisterHotKey + 原生事件过滤器，仅 Windows）
 │   ├── music.py            音乐感知状态机（轮询 / 滞回 / 防抖）
 │   ├── audio_probe.py      零依赖音频探测（Core Audio 峰值 + 音乐应用识别，仅 Windows）
+│   ├── idle_roam.py        空闲检测（GetLastInputInfo）+ 漫游状态机（walk/pause/return）
 │   ├── settings_dialog.py  设置面板 / 关于窗口
 │   ├── assets.py           素材加载、缩放缓存、命中区域、抓边眼睛分层
 │   ├── gallery/            图鉴与换肤：models / provider / validator / builtin / cache / adapter / cloud / service / switcher / ui_*
@@ -287,6 +349,7 @@ lines.pick("drop_image")                        # → 好漂亮的图！
     ├── verify_gaze_edges.py 验证五种姿态下的视线跟随
     ├── preview.py          离屏渲染效果图（不打扰桌面）
     ├── smoke_features.py   离屏冒烟测试（热键 / 拖放 / 音乐 / 小游戏 / 台词）
+    ├── smoke_idle_roam.py  离屏冒烟测试（空闲检测 / 漫游 / 归位 / 打断 / 贴边恢复）
     ├── shoot.py            触发特效并连续截屏
     └── winshot.py          按窗口标题截图
 ```
@@ -313,6 +376,8 @@ lines.pick("drop_image")                        # → 好漂亮的图！
 
 **音乐律动不改特效**：不新增特效，只在 `_tick` 末尾叠加一层「权重缓动」的微小摆动 —— `_music_groove` 以 `k = min(1, dt×2.5)` 缓动到 0/1，再乘活泼程度给出 ±1.8° 旋转与 ±1.0px 位移。关掉音乐时权重自然衰减到 0，姿态不会突然定格；拖动中不律动（免得两个位移打架）。
 
+**空闲漫游不改架构**：`IdleWatcher` 只回答「人有没有在操作」，`RoamController` 只回答「现在往哪走」，两者靠 `idle_started / idle_ended` 两个信号连接。`PetWindow._tick` 末尾调一次 `roam.step(dt)`：位置由控制器直接 `move()`（复用 `moveEvent → _sync_overlay`，粒子层自动跟随），姿态以 `bob / rot / sx / sy` 叠加到当帧 `Pose` 上，不新增特效、不改 `EffectEngine`。控制器从不写 `cfg.pos`，只有结束（且不归位）时才落盘；`quit()` 先 `finish(immediate=True)` 再取位置，避免把半路坐标存成下次启动的位置。
+
 **双击与单击**：`mouseReleaseEvent` 不再直接执行单击，而是启动一个 `min(260, doubleClickInterval())` 的单次定时器；`mouseDoubleClickEvent` 先 `stop()` 它并发 `rps_requested`，同时置 `_ignore_click` 让双击的第二下松手不再排一次单击。
 
 **单实例**：`QLocalServer` 占名，重复启动时向已有实例发命令并退出；同一个通道也用于自动化测试（`effect:box` / `settings` / `rps` / `music:on|off|status` / `hotkey:toggle` / `drop:test:<path>` / `quit`）。
@@ -333,6 +398,9 @@ lines.pick("drop_image")                        # → 好漂亮的图！
 
 **放着音乐它却不摇？**
 1) 设置 → 交互 → 音乐感知是否开着；2) 系统音量是否静音（静音时峰值恒为 0）；3) 音量太小（低于 0.004）识别不到；4) 蓝牙耳机切换设备后，下一次 8 秒轮询会重新取默认设备。`music:status` 可以看当前峰值。
+
+**等了半天 Buddy 也不自己溜达？**
+1) 设置 → 交互 → 「空闲自动漫游」是否打开、触发时长是不是调大了；2) 「锁定位置」开着时按设计不漫游；3) 宠物隐藏 / 菜单弹窗打开期间不会启动；4) 有没有常驻工具在定时移动光标或模拟按键（`GetLastInputInfo` 会被刷新）；5) 发 `idle:on` 立刻预览，再看 `idle:status` 里的 `source / idle_sec / degraded` —— `degraded=true` 说明走的是光标近似判断，不是系统级空闲。
 
 **点了左键没反应？**
 先确认 WorkBuddy 的安装位置。设置 → 程序路径 → 浏览，选中 `WorkBuddy.exe`。默认会自动在注册表与常见目录（如 `D:\WorkBuddy`）里查找。

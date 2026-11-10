@@ -24,3 +24,9 @@ ehthumbs.db
 
 # ===== AI generation leftover (not required to run) =====
 assets/gen/
+
+# ===== Local-only archives & build logs (never publish) =====
+# archive/ holds full-size backups of old releases (2 x 63 MB);
+# .build_temp/ holds PyInstaller diagnostic logs and icon intermediates.
+archive/
+.build_temp/

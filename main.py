@@ -21,6 +21,7 @@ from app.effects import EFFECT_ORDER, EFFECTS, EffectEngine  # noqa: E402
 from app.gallery.service import GalleryService  # noqa: E402
 from app.gallery.switcher import SkinSwitcher  # noqa: E402
 from app.hotkeys import GlobalHotkeys  # noqa: E402
+from app.idle_roam import FORCE_HOLD_S, IdleWatcher, RoamController  # noqa: E402
 from app.music import MusicDetector  # noqa: E402
 from app.overlay import EffectOverlay  # noqa: E402
 from app.pet_window import PetWindow  # noqa: E402
@@ -31,6 +32,7 @@ SERVER_NAME = "WorkBuddyDesktopPet-1"
 APP_ID = "WorkBuddy.DesktopPet.1"
 DUMP_NAME = "gallery_dump.json"
 MUSIC_STATUS_NAME = "music_status.json"
+IDLE_STATUS_NAME = "idle_status.json"
 
 
 def _dialog_kwargs(section: str, gallery=None, switcher=None) -> dict:
@@ -93,6 +95,14 @@ class PetApp:
         self.pet.rps_requested.connect(self.open_rps)
         self.pet.music_toggle_requested.connect(self.set_music_aware)
 
+        # 4) 空闲自动漫游：检测器只看「人有没有在操作」，控制器只管「怎么逛」
+        self.idle = IdleWatcher(self.cfg, None)
+        self.roam = RoamController(self.cfg, self.pet, None)
+        self.pet.set_roam_controller(self.roam)
+        self.idle.idle_started.connect(self.roam.start)
+        self.idle.idle_ended.connect(self.roam.finish)
+        self.pet.roam_toggle_requested.connect(self.set_roam_enabled)
+
         self.icon = icons.app_icon(self.sprites.raw[0])
         self.app.setWindowIcon(self.icon)
         self._build_tray()
@@ -102,6 +112,7 @@ class PetApp:
         QTimer.singleShot(0, self.gallery.startup_sync)
         # 首帧之后再注册热键/开轮询：注册失败只弹一次托盘提示，不阻塞启动
         QTimer.singleShot(400, lambda: self.hotkeys.set_enabled(self.cfg.hotkey_enabled))
+        QTimer.singleShot(600, lambda: self.idle.set_enabled(self.cfg.roam_enabled))
         self.music.set_enabled(self.cfg.music_aware)
 
     # ---------------------------------------------------------- 图标
@@ -156,6 +167,12 @@ class PetApp:
         act_music.setChecked(self.cfg.music_aware)
         act_music.toggled.connect(self.set_music_aware)
         fx_menu.addAction(act_music)
+
+        act_roam = QAction(icons.icon_moon(), "空闲自动漫游", fx_menu)
+        act_roam.setCheckable(True)
+        act_roam.setChecked(self.cfg.roam_enabled)
+        act_roam.toggled.connect(self.set_roam_enabled)
+        fx_menu.addAction(act_roam)
         menu.addMenu(fx_menu).setIcon(icons.icon_sparkle())
 
         act_settings = QAction(icons.icon_gear(), "设置…", menu)
@@ -228,6 +245,7 @@ class PetApp:
             **_dialog_kwargs(section, self.gallery, self.switcher),
         )
         dlg.preview.connect(self.pet.apply_settings)
+        self.roam.interrupt()       # 打开面板=人在操作，立刻收场再弹窗
         self.pet.set_overlay_suppressed(True)
         try:
             accepted = bool(dlg.exec_())
@@ -236,11 +254,13 @@ class PetApp:
         self.pet.apply_settings()
         if accepted:
             self.engine.say("设置已保存", 1.5)
-        # 面板里可能改了热键/音乐感知开关：取消与保存都要同步到真实状态
+        # 面板里可能改了热键/音乐感知/漫游开关：取消与保存都要同步到真实状态
         self.hotkeys.set_enabled(self.cfg.hotkey_enabled)
         self.music.set_enabled(self.cfg.music_aware)
         if not self.cfg.music_aware:
             self.pet.on_music_state(False)
+        self.roam.set_enabled(self.cfg.roam_enabled)
+        self.idle.set_enabled(self.cfg.roam_enabled)
 
     def open_about(self) -> None:
         dlg = AboutDialog(self.sprites.raw[0], self.pet)
@@ -304,6 +324,18 @@ class PetApp:
             self.engine.say("音乐感知已关闭", 1.8)
         else:
             self.engine.say("音乐感知已开启", 1.8)
+
+    def set_roam_enabled(self, checked: bool) -> None:
+        """开关空闲自动漫游：写配置、同步检测器与控制器，并给一句气泡。"""
+        checked = bool(checked)
+        self.cfg.roam_enabled = checked
+        config.save(self.cfg)
+        self.roam.set_enabled(checked)     # 关闭时立刻归位
+        self.idle.set_enabled(checked)     # 关闭时若正空闲会补发 idle_ended（此时已是 off，幂等）
+        if checked:
+            self.engine.say(f"离开 {self.cfg.roam_idle_min} 分钟我就去溜达", 2.2)
+        else:
+            self.engine.say("空闲漫游已关闭", 1.8)
 
     def set_hotkey_enabled(self, checked: bool) -> None:
         """开关全局快捷键：写配置并立即注册/注销。"""
@@ -369,6 +401,15 @@ class PetApp:
                 self.music.force(False)
             elif cmd == "music:status":
                 self.dump_music_status()
+            elif cmd == "idle:on":
+                self.show_pet()
+                self.idle.force(True, hold_s=FORCE_HOLD_S)
+            elif cmd == "idle:off":
+                self.idle.force(False)
+            elif cmd == "idle:status":
+                self.dump_idle_status()
+            elif cmd == "roam:toggle":
+                self.set_roam_enabled(not self.cfg.roam_enabled)
             elif cmd == "hotkey:toggle":
                 self.toggle_pet()
             elif cmd.startswith("drop:test:"):
@@ -404,6 +445,18 @@ class PetApp:
         except Exception:
             pass
 
+    def dump_idle_status(self) -> None:
+        """把空闲检测 + 漫游状态写到 ``%APPDATA%/WorkBuddyPet/idle_status.json``。"""
+        try:
+            payload = self.idle.poll_now()
+            payload["roam"] = self.roam.status()
+            path = config.config_dir() / IDLE_STATUS_NAME
+            path.write_text(
+                json.dumps(payload, ensure_ascii=False, indent=2, default=str), encoding="utf-8"
+            )
+        except Exception:
+            pass
+
     def _test_edge(self, side: str) -> None:
         """调试用：把宠物放到指定侧边并触发抓握。"""
         from PyQt5.QtWidgets import QApplication as _QApp
@@ -431,6 +484,16 @@ class PetApp:
             pass
         try:
             self.music.stop()
+        except Exception:
+            pass
+        # 漫游中退出：先归位（或把落点记成新家），再取位置落盘，
+        # 否则会把半路坐标存成下次启动的位置。
+        try:
+            self.roam.finish(immediate=True)
+        except Exception:
+            pass
+        try:
+            self.idle.stop()
         except Exception:
             pass
         self.cfg.pos = [self.pet.x(), self.pet.y()]

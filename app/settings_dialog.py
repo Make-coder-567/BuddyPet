@@ -34,7 +34,7 @@ from . import autostart, icons, theme
 from .config import GALLERY_OWNED_FIELDS, LEFT_CLICK_CHOICES, STATS_OWNED_FIELDS, Settings, save
 from .gallery.ui_section import GallerySection
 
-APP_VERSION = "1.3.1"
+APP_VERSION = "1.4.0"
 
 
 class Switch(QWidget):
@@ -331,6 +331,33 @@ class SettingsDialog(CardDialog):
         self.interval_slider.valueChanged.connect(self._on_interval)
         self.interval_slider.setEnabled(cfg.auto_effect)
 
+        # 空闲自动漫游：人离开一会儿，Buddy 自己下地溜达
+        self.roam_switch = Switch(cfg.roam_enabled)
+        self.roam_switch.toggled.connect(self._on_roam)
+        self._row("空闲自动漫游", self.roam_switch)
+
+        self.roam_idle_slider, self.roam_idle_value = self._slider_row(
+            "触发空闲时长", 1, 30, cfg.roam_idle_min, " 分钟", 128
+        )
+        self.roam_idle_slider.valueChanged.connect(self._on_roam_idle)
+
+        self.roam_speed_slider, self.roam_speed_value = self._slider_row(
+            "漫游速度", 30, 180, cfg.roam_speed, " px/s", 128
+        )
+        self.roam_speed_slider.valueChanged.connect(self._on_roam_speed)
+
+        self.roam_home_switch = Switch(cfg.roam_return_home)
+        self.roam_home_switch.toggled.connect(self._on_roam_home)
+        self._row("回来时归位", self.roam_home_switch)
+
+        self.roam_fun_switch = Switch(cfg.roam_effects)
+        self.roam_fun_switch.toggled.connect(self._on_roam_fun)
+        self._row("漫游时随机互动", self.roam_fun_switch)
+
+        roam_hint = _hint("无人操作一会儿，Buddy 会在屏幕里自己溜达；你一动键鼠，它就小跑回来。")
+        self.col.addWidget(roam_hint)
+        self._sync_roam_enabled()
+
         self.hint_switch = Switch(cfg.bubble_hint)
         self.hint_switch.toggled.connect(self._on_hint)
         self._row("悬停提示气泡", self.hint_switch)
@@ -498,6 +525,38 @@ class SettingsDialog(CardDialog):
         self.cfg.auto_effect_min = v
         self._changed()
 
+    def _on_roam(self, checked: bool) -> None:
+        self.cfg.roam_enabled = bool(checked)
+        self._sync_roam_enabled()
+        self._changed()
+
+    def _on_roam_idle(self, v: int) -> None:
+        self.cfg.roam_idle_min = v
+        self._changed()
+
+    def _on_roam_speed(self, v: int) -> None:
+        self.cfg.roam_speed = v
+        self._changed()
+
+    def _on_roam_home(self, checked: bool) -> None:
+        self.cfg.roam_return_home = bool(checked)
+        self._changed()
+
+    def _on_roam_fun(self, checked: bool) -> None:
+        self.cfg.roam_effects = bool(checked)
+        self._changed()
+
+    def _sync_roam_enabled(self) -> None:
+        """总开关关掉时把子项一起置灰，避免「改了却不生效」的错觉。"""
+        on = bool(self.cfg.roam_enabled)
+        for widget in (
+            self.roam_idle_slider,
+            self.roam_speed_slider,
+            self.roam_home_switch,
+            self.roam_fun_switch,
+        ):
+            widget.setEnabled(on)
+
     def _on_hint(self, checked: bool) -> None:
         self.cfg.bubble_hint = checked
         self._changed()
@@ -566,6 +625,8 @@ class SettingsDialog(CardDialog):
             self.opacity_slider,
             self.lively_slider,
             self.interval_slider,
+            self.roam_idle_slider,
+            self.roam_speed_slider,
             self.volume_slider,
         )
         for widget in sliders:
@@ -574,6 +635,8 @@ class SettingsDialog(CardDialog):
         self.opacity_slider.setValue(int(round(self.cfg.opacity * 100)))
         self.lively_slider.setValue(int(round(self.cfg.liveliness * 100)))
         self.interval_slider.setValue(self.cfg.auto_effect_min)
+        self.roam_idle_slider.setValue(self.cfg.roam_idle_min)
+        self.roam_speed_slider.setValue(self.cfg.roam_speed)
         vol_pct = int(round(self.cfg.sound_volume * 100))
         self.volume_slider.setValue(vol_pct)
         for widget in sliders:
@@ -582,11 +645,17 @@ class SettingsDialog(CardDialog):
         self.opacity_value.setText(f"{int(round(self.cfg.opacity * 100))} %")
         self.lively_value.setText(f"{int(round(self.cfg.liveliness * 100))} %")
         self.interval_value.setText(f"{self.cfg.auto_effect_min} 分钟")
+        self.roam_idle_value.setText(f"{self.cfg.roam_idle_min} 分钟")
+        self.roam_speed_value.setText(f"{self.cfg.roam_speed} px/s")
         self.volume_value.setText(f"{vol_pct} %")
         self.click_combo.setCurrentIndex(max(0, self.click_combo.findData(self.cfg.left_click)))
         self.idle_switch.setChecked(self.cfg.idle_anim)
         self.auto_switch.setChecked(self.cfg.auto_effect)
         self.interval_slider.setEnabled(self.cfg.auto_effect)
+        self.roam_switch.setChecked(self.cfg.roam_enabled)
+        self.roam_home_switch.setChecked(self.cfg.roam_return_home)
+        self.roam_fun_switch.setChecked(self.cfg.roam_effects)
+        self._sync_roam_enabled()
         self.hint_switch.setChecked(self.cfg.bubble_hint)
         self.edge_switch.setChecked(self.cfg.edge_cling)
         self.gaze_switch.setChecked(self.cfg.gaze_follow)

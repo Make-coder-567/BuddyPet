@@ -97,6 +97,13 @@ class Settings:
     rps_losses: int = 0                   # 石头剪刀布：负
     rps_draws: int = 0                    # 石头剪刀布：平
 
+    # ---------------- 空闲自动漫游 ----------------
+    roam_enabled: bool = True             # 无操作一段时间后，Buddy 自己满屏溜达
+    roam_idle_min: int = 3                # 判定「人不在」的空闲时长（分钟，1~30）
+    roam_speed: int = 78                  # 漫游速度（px/s，30~180）
+    roam_return_home: bool = True         # 人回来后小跑回原位；否则就地停住
+    roam_effects: bool = True             # 漫游途中限频的台词 / 小特效
+
     def clamp(self) -> "Settings":
         self.size = int(max(120, min(360, self.size)))
         self.opacity = float(max(0.35, min(1.0, self.opacity)))
@@ -126,6 +133,12 @@ class Settings:
         self.rps_wins = max(0, int(self.rps_wins))
         self.rps_losses = max(0, int(self.rps_losses))
         self.rps_draws = max(0, int(self.rps_draws))
+        # ---- 空闲自动漫游 ----
+        self.roam_enabled = bool(self.roam_enabled)
+        self.roam_idle_min = int(max(1, min(30, self.roam_idle_min)))
+        self.roam_speed = int(max(30, min(180, self.roam_speed)))
+        self.roam_return_home = bool(self.roam_return_home)
+        self.roam_effects = bool(self.roam_effects)
         return self
 
     def to_dict(self) -> dict[str, Any]:

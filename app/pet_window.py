@@ -62,6 +62,8 @@ class PetWindow(QWidget):
     rps_requested = pyqtSignal()
     #: 请求切换「音乐感知」开关（右键菜单勾选项；真正的落盘由 main 负责）
     music_toggle_requested = pyqtSignal(bool)
+    #: 请求切换「空闲自动漫游」开关（落盘与检测器开关由 main 统一负责）
+    roam_toggle_requested = pyqtSignal(bool)
 
     def __init__(self, cfg: Settings, sprites: BuddySprites, engine: EffectEngine, overlay: EffectOverlay, root: Path):
         flags = Qt.FramelessWindowHint | Qt.Tool | Qt.NoDropShadowWindowHint
@@ -129,6 +131,8 @@ class PetWindow(QWidget):
         self._click_timer.setSingleShot(True)
         self._click_timer.timeout.connect(self._on_click)
         self._ignore_click = False   # 双击后抑制紧随其后的那次单击
+        # 空闲自动漫游控制器：由 main 在装配阶段注入；_tick 每帧向它要步态增量
+        self._roam = None
 
         self._apply_geometry(initial=True)
         self._detect_edge_from_pos()
@@ -697,6 +701,16 @@ class PetWindow(QWidget):
             pose.rot += 1.8 * groove * math.sin(math.tau * self._t / 2.6)
             pose.dy += 1.0 * groove * math.sin(math.tau * self._t / 1.3)
 
+        # 空闲自动漫游：位置由控制器直接写到窗口上，这里只叠加步态。
+        # 幅度刻意压在 ±2.2px 内，避免每帧触发 airborne 轮廓遮罩切换。
+        if self._roam is not None:
+            roam = self._roam.step(dt)
+            if roam is not None:
+                pose.dy += roam.bob
+                pose.rot += roam.rot
+                pose.sx *= roam.sx
+                pose.sy *= roam.sy
+
         # 随机眨眼
         if not self.engine.is_busy() and pose.eyes is None:
             self._blink_in -= dt
@@ -709,12 +723,20 @@ class PetWindow(QWidget):
         self._pose = pose
         self._update_gaze(dt)
         airborne = abs(pose.dy) > 3.0
+        if self._roam is not None and self._roam.active:
+            # 漫游的步态会反复穿过 ±3px 阈值；固定用「带抬升余量」的遮罩，
+            # 避免每帧 setMask 来回切换（立绘缩小/侧身也绝不会越出这个轮廓）
+            airborne = True
         # 拖入态用的是全窗遮罩（要画出宠物外的虚线框），此时不要去切轮廓遮罩
         if not self._drag_over and airborne != self._airborne_mask:
             self._apply_mask(airborne)
 
         self.update()
         self._sync_overlay()
+
+    def set_roam_controller(self, controller) -> None:
+        """由 ``PetApp`` 注入漫游控制器；传入 ``None`` 可随时卸载。"""
+        self._roam = controller
 
     def _gaze_available(self) -> bool:
         """当前姿态是否有可动眼睛。
@@ -850,6 +872,9 @@ class PetWindow(QWidget):
 
     # ------------------------------------------------------------ 鼠标
     def mousePressEvent(self, event) -> None:
+        # 人已经亲手点进来了：不必等 500ms 的空闲轮询，立刻收住漫游并归位
+        if self._roam is not None and self._roam.active:
+            self._roam.interrupt()
         if event.button() == Qt.LeftButton:
             # 新的一次按下：取消上一次还没落地的单击（也顺带清掉双击抑制）
             self._click_timer.stop()
@@ -1298,6 +1323,13 @@ class PetWindow(QWidget):
         act_auto.setChecked(self.cfg.auto_effect)
         act_auto.toggled.connect(self._toggle_auto_effect)
         fx_menu.addAction(act_auto)
+
+        # 空闲自动漫游：只发信号，落盘与检测器开关由 main 统一负责
+        act_roam = QAction(icons.icon_moon(), "空闲自动漫游", fx_menu)
+        act_roam.setCheckable(True)
+        act_roam.setChecked(self.cfg.roam_enabled)
+        act_roam.toggled.connect(self.roam_toggle_requested.emit)
+        fx_menu.addAction(act_roam)
 
         act_sound = QAction("音效", fx_menu)
         act_sound.setCheckable(True)
