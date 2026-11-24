@@ -222,6 +222,17 @@ def icon_rotate(color: str = "#8AB4FF") -> QIcon:
     return _finish(pm, p)
 
 
+def icon_folder(color: str = "#FFD36E") -> QIcon:
+    """文件夹 + 整理箭头：文件整理。"""
+    pm, p = _base(color)
+    p.drawPolyline(QPointF(2.6, 4.4), QPointF(7.0, 4.4), QPointF(8.4, 6.4), QPointF(14.2, 6.4))
+    p.drawLine(QPointF(2.6, 4.4), QPointF(2.6, 14.2))
+    p.drawLine(QPointF(2.6, 14.2), QPointF(14.2, 14.2))
+    p.drawLine(QPointF(14.2, 14.2), QPointF(14.2, 6.4))
+    p.drawLine(QPointF(5.8, 10.4), QPointF(11.2, 10.4))
+    return _finish(pm, p)
+
+
 def icon_confetti(color: str = "#FF7A3D") -> QIcon:
     pm, p = _base(color)
     pen = p.pen()

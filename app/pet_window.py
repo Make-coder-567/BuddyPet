@@ -60,6 +60,8 @@ class PetWindow(QWidget):
     gallery_requested = pyqtSignal()
     #: 请求开一局石头剪刀布（双击宠物 / 菜单 / 托盘 / 命令通道）
     rps_requested = pyqtSignal()
+    #: 请求打开文件整理卡片（菜单 / 托盘 / 命令通道）
+    organize_requested = pyqtSignal()
     #: 请求切换「音乐感知」开关（右键菜单勾选项；真正的落盘由 main 负责）
     music_toggle_requested = pyqtSignal(bool)
     #: 请求切换「空闲自动漫游」开关（落盘与检测器开关由 main 统一负责）
@@ -1348,6 +1350,10 @@ class PetWindow(QWidget):
         act_rps = QAction(icons.icon_gift(), "石头剪刀布…", menu)
         act_rps.triggered.connect(self.rps_requested.emit)
         menu.addAction(act_rps)
+
+        act_organize = QAction(icons.icon_folder(), "文件整理…", menu)
+        act_organize.triggered.connect(self.organize_requested.emit)
+        menu.addAction(act_organize)
 
         act_settings = QAction(icons.icon_gear(), "设置…", menu)
         act_settings.setShortcut("Ctrl+,")

@@ -23,6 +23,7 @@ from app.gallery.switcher import SkinSwitcher  # noqa: E402
 from app.hotkeys import GlobalHotkeys  # noqa: E402
 from app.idle_roam import FORCE_HOLD_S, IdleWatcher, RoamController  # noqa: E402
 from app.music import MusicDetector  # noqa: E402
+from app.organizer_dialog import OrganizerDialog  # noqa: E402
 from app.overlay import EffectOverlay  # noqa: E402
 from app.pet_window import PetWindow  # noqa: E402
 from app.rps import RPSDialog  # noqa: E402
@@ -33,6 +34,7 @@ APP_ID = "WorkBuddy.DesktopPet.1"
 DUMP_NAME = "gallery_dump.json"
 MUSIC_STATUS_NAME = "music_status.json"
 IDLE_STATUS_NAME = "idle_status.json"
+ORGANIZER_STATUS_NAME = "organizer_status.json"
 
 
 def _dialog_kwargs(section: str, gallery=None, switcher=None) -> dict:
@@ -94,6 +96,11 @@ class PetApp:
         self._rps_result = ""
         self.pet.rps_requested.connect(self.open_rps)
         self.pet.music_toggle_requested.connect(self.set_music_aware)
+
+        # 5) 文件整理：选择目录 → 方案预览 → 用户确认 → 执行/撤销
+        #    与 RPS 一样防重入；整理卡片关闭前不做任何移动，移动只在用户点确认后发生。
+        self._organizer_open = False
+        self.pet.organize_requested.connect(self.open_organizer)
 
         # 4) 空闲自动漫游：检测器只看「人有没有在操作」，控制器只管「怎么逛」
         self.idle = IdleWatcher(self.cfg, None)
@@ -193,6 +200,10 @@ class PetApp:
         act_rps = QAction(icons.icon_gift(), "石头剪刀布…", menu)
         act_rps.triggered.connect(self.open_rps)
         menu.addAction(act_rps)
+
+        act_organize = QAction(icons.icon_folder(), "文件整理…", menu)
+        act_organize.triggered.connect(self.open_organizer)
+        menu.addAction(act_organize)
         menu.addSeparator()
 
         act_quit = QAction(icons.icon_power(), "退出", menu)
@@ -301,6 +312,45 @@ class PetApp:
                 self._rps_result = ""
             self.pet.apply_settings()
 
+    def open_organizer(self, initial_text: str = "") -> None:
+        """打开文件整理卡片；卡片内部只在用户确认后才移动文件。"""
+        if self._organizer_open:
+            return
+        self._organizer_open = True
+        self.pet.set_overlay_suppressed(True)
+        try:
+            dlg = OrganizerDialog(self.pet, initial_text=initial_text or "")
+            dlg.organize_finished.connect(self._on_organize_done)
+            dlg.undo_finished.connect(self._on_organize_done)
+            dlg.exec_()
+            dlg.deleteLater()
+        except Exception:
+            self.engine.say("整理面板没打开，抱歉", 2.0)
+        finally:
+            self._organizer_open = False
+            self.pet.set_overlay_suppressed(False)
+            self.pet.apply_settings()
+
+    def _on_organize_done(self, summary: str) -> None:
+        """整理/撤销结束后用气泡播报摘要（卡片里同时有完整结果表）。"""
+        try:
+            self.engine.say(summary, 3.2)
+        except Exception:
+            pass
+
+    def dump_organizer_status(self) -> None:
+        """把最近一次整理记录写到配置目录（供 QA 断言，不改动任何文件）。"""
+        try:
+            from app import desktop_organizer as organizer
+
+            payload = organizer.last_session() or {"status": "empty"}
+            path = config.config_dir() / ORGANIZER_STATUS_NAME
+            path.write_text(
+                json.dumps(payload, ensure_ascii=False, indent=2, default=str), encoding="utf-8"
+            )
+        except Exception:
+            pass
+
     def _on_rps_round(self, result: str) -> None:
         """一局结束：赢撒花、输起跳、平眨眼。"""
         self._rps_result = result
@@ -395,6 +445,17 @@ class PetApp:
                 self._cmd_skin(cmd.split(":", 1)[1])
             elif cmd == "rps":
                 self.open_rps()
+            elif cmd == "organize":
+                self.open_organizer()
+            elif cmd.startswith("organize:"):
+                rest = cmd.split(":", 1)[1].strip()
+                if rest == "undo":
+                    self.open_organizer("撤销上次整理")
+                elif rest == "dump":
+                    self.dump_organizer_status()
+                elif rest:
+                    # 支持 scan / 文件整理 / 撤销上次整理；仍然只生成方案，等用户点确认
+                    self.open_organizer(rest)
             elif cmd == "music:on":
                 self.music.force(True)
             elif cmd == "music:off":

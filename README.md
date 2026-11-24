@@ -65,6 +65,7 @@ pip install -r requirements.txt
 互动效果 ▶   随机来一个 / 10 个特效 / 待机随机互动
               空闲自动漫游 ✓ / 音效 ✓ / 音乐感知 ✓
 石头剪刀布…
+文件整理…
 设置…  Ctrl+,
 全局快捷键（Ctrl+Alt+B） ✓
 切换 Buddy…
@@ -285,6 +286,22 @@ python -c "from PyQt5.QtWidgets import QApplication;from PyQt5.QtNetwork import 
 
 ---
 
+## 文件整理
+
+右键菜单 →「文件整理…」（或托盘菜单 / 命令 `organize`）打开整理卡片，直接点三个按钮即可，不需要输入文字。卡片右上角有「选择路径…」按钮，可改要整理的文件夹，**默认是当前用户桌面**；Windows / Program Files / AppData 等系统目录会被拒绝。整理逻辑来自用户提供的 `文件整理.py`：**只按文件后缀名分类**，不再支持按修改日期、关键词等自定义规则。
+
+| 按钮 | 效果 |
+| --- | --- |
+| `扫描文件` | 只读列出当前目录顶层文件及其分类去向 |
+| `开始整理` | 按后缀名分到「图片文件 / 视频文件 / 音频文件 / PDF文件 / Word文件 / Excel文件 / PPT文件 / Hex数据文件 / zip压缩文件 / python程序文件 / 其他类型文件」 |
+| `撤销上次整理` | 先展示还原清单，确认后移回原位 |
+
+分类表与流程（`os.listdir` → `os.path.splitext` → `os.mkdir` → `shutil.move`）沿用原脚本，只把硬编码路径 `d:/Users/ASUS/Desktop/DesktopFiles` 改为当前用户的桌面目录。
+
+安全约定：**生成方案与扫描完全只读**；方案表格逐项列出「文件 → 目标位置 → 原因」，只有点「确认移动」才会执行。快捷方式、可执行/程序、系统隐藏文件、Office 临时文件与子文件夹保持原位；目标已有同名文件时跳过，不覆盖、不删除。每次执行写入 `%APPDATA%\WorkBuddyPet\organizer_journal.json`（保留最近 5 次），撤销只针对最近一次且只能撤销一次。命令通道支持 `organize`、`organize:undo` 和 `organize:dump`。
+
+---
+
 ## 台词池
 
 新增场景的所有中文短句集中在 `app/lines.py`：
@@ -322,6 +339,8 @@ lines.pick("drop_image")                        # → 好漂亮的图！
 │   ├── overlay.py          特效叠加层：点击穿透的粒子窗口
 │   ├── effects.py          10 个互动特效 + 粒子系统 + 气泡
 │   ├── rps.py              石头剪刀布：纯逻辑 judge() + 卡片对话框
+│   ├── desktop_organizer.py 文件整理：用户脚本的后缀名分类逻辑 + 只读方案 / 执行 / 撤销
+│   ├── organizer_dialog.py  文件整理卡片：目录选择、方案预览、确认执行与撤销
 │   ├── lines.py            台词池（热键 / 拖放 / 音乐 / 小游戏）
 │   ├── hotkeys.py          全局快捷键（RegisterHotKey + 原生事件过滤器，仅 Windows）
 │   ├── music.py            音乐感知状态机（轮询 / 滞回 / 防抖）
@@ -350,6 +369,7 @@ lines.pick("drop_image")                        # → 好漂亮的图！
     ├── preview.py          离屏渲染效果图（不打扰桌面）
     ├── smoke_features.py   离屏冒烟测试（热键 / 拖放 / 音乐 / 小游戏 / 台词）
     ├── smoke_idle_roam.py  离屏冒烟测试（空闲检测 / 漫游 / 归位 / 打断 / 贴边恢复）
+    ├── qa_organizer.py     文件整理 QA：临时沙箱验证分类表 / 只读 / 冲突 / 关键文件 / 撤销
     ├── shoot.py            触发特效并连续截屏
     └── winshot.py          按窗口标题截图
 ```

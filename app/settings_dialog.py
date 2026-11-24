@@ -34,7 +34,7 @@ from . import autostart, icons, theme
 from .config import GALLERY_OWNED_FIELDS, LEFT_CLICK_CHOICES, STATS_OWNED_FIELDS, Settings, save
 from .gallery.ui_section import GallerySection
 
-APP_VERSION = "1.4.0"
+APP_VERSION = "1.5.4"
 
 
 class Switch(QWidget):
